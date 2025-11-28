@@ -8,3 +8,4 @@ For instructions, please refer to the README in each folder:
 * [trained_models](trained_models) Contains the ERFNet trained models for the baseline eval. 
 * [eomt](eomt) It is almost the original folder of the EoMT project. Inside it you will find code to train and pretrained checkpoints for EoMT.
 
+my changes
