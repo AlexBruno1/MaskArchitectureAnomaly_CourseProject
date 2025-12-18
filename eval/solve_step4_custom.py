@@ -98,7 +98,9 @@ def main():
     ground_truths = []
 
     # Process first 20 images (Remove [:20] to run ALL images)
-    for i, (img_path, label_path) in enumerate(valid_pairs[:20]):
+    #for i, (img_path, label_path) in enumerate(valid_pairs[:20]):
+    #now all images
+    for i, (img_path, label_path) in enumerate(valid_pairs):
         print(f"[{i+1}] Processing: {os.path.basename(img_path)}")
 
         # Input

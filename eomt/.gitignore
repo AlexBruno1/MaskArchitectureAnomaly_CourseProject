@@ -178,3 +178,18 @@ cython_debug/
 
 # PyPI configuration file
 .pypirc
+
+
+# Ignore datasets
+data/
+*.jpg
+*.png
+
+# Ignore large weights
+*.pth
+*.pt
+
+# Ignore Python cache
+__pycache__/
+*.pyc
+.ipynb_checkpoints/

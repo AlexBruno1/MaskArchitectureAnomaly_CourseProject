@@ -1,4 +1,4 @@
-# eomt/solve_step5_final.py
+# eomt/solve_step5_high_score.py
 import os
 import glob
 import torch
@@ -25,27 +25,16 @@ IMG_SIZE = 512
 input_transform = Compose([Resize((IMG_SIZE, IMG_SIZE), Image.BILINEAR), ToTensor()])
 target_transform = Compose([Resize((512, 1024), Image.NEAREST)])
 
-# --- 2. INTELLIGENT UNPACKER (THE FIX) ---
+# --- 2. INTELLIGENT UNPACKER ---
 def unpack_outputs(outputs):
-    """
-    Intelligently figures out which output is Masks and which is Logits
-    based on dimensionality.
-    """
-    # 1. If it's a tuple/list, we need to find the tensors
     items = outputs
-    
-    # If the items are lists (multi-scale), take the last one (final prediction)
     final_items = []
     for item in items:
         if isinstance(item, (list, tuple)):
-            final_items.append(item[-1]) # Take last scale
+            final_items.append(item[-1]) 
         else:
             final_items.append(item)
             
-    # 2. Assign based on Dimensions
-    # Masks are [B, Q, H, W] -> 4 Dimensions
-    # Logits are [B, Q, C]   -> 3 Dimensions
-    
     pred_masks = None
     pred_logits = None
     
@@ -57,24 +46,27 @@ def unpack_outputs(outputs):
             
     return pred_logits, pred_masks
 
-def mask_to_pixel_probs(outputs, h, w):
+def mask_to_pixel_probs(outputs, h, w, use_react=True):
     # 1. Unpack safely
     pred_logits, pred_masks = unpack_outputs(outputs)
 
     if pred_logits is None or pred_masks is None:
-        # Fallback for weird edge cases
-        print("Warning: Could not auto-detect shapes. using index 0 as masks.")
         pred_masks = outputs[0][-1]
         pred_logits = outputs[1][-1]
 
+    # --- UPGRADE 1: ReAct (Rectified Activation) ---
+    # We clip the logits at 1.0. This prevents the model from being 
+    # "too sure" about the background, allowing anomalies to surface.
+    if use_react:
+        pred_logits = pred_logits.clip(max=1.0) 
+    # -----------------------------------------------
+
     # 2. Softmax (Classes)
-    # pred_logits is [B, Q, 20]. We want [B, Q, 19]
     class_probs = F.softmax(pred_logits, dim=-1)
     if class_probs.shape[-1] > NUM_CLASSES: 
         class_probs = class_probs[..., :-1] 
     
     # 3. Sigmoid (Masks)
-    # Resize masks to image size
     pred_masks = F.interpolate(pred_masks, size=(h, w), mode="bilinear", align_corners=False)
     mask_probs = pred_masks.sigmoid()
 
@@ -83,11 +75,34 @@ def mask_to_pixel_probs(outputs, h, w):
 
 def get_anomaly_scores(pixel_probs):
     scores = {}
+    # Small epsilon to prevent log(0)
+    eps = 1e-8
+    
+    # 1. MSP (Baseline)
     conf, _ = torch.max(pixel_probs, dim=1)
     scores["MSP"] = (1.0 - conf).squeeze(0).cpu().numpy()
-    scores["MaxLogit"] = -torch.max(torch.log(pixel_probs + 1e-8), dim=1)[0].squeeze(0).cpu().numpy()
-    scores["MaxEntropy"] = -torch.sum(pixel_probs * torch.log(pixel_probs + 1e-8), dim=1).squeeze(0).cpu().numpy()
-    scores["RbA"] = (1.0 - torch.sum(pixel_probs, dim=1)).squeeze(0).cpu().numpy().clip(0, 1)
+
+    # 2. MaxEntropy
+    scores["MaxEntropy"] = -torch.sum(pixel_probs * torch.log(pixel_probs + eps), dim=1).squeeze(0).cpu().numpy()
+
+    # --- UPGRADE 2: Local Standardized MaxLogit ---
+    # We approximate Logits using Log(Probs).
+    # Then we normalize them locally (subtract mean, divide std) 
+    # to find pixels that stand out from THIS image's norm.
+    pseudo_logits = torch.log(pixel_probs + eps)
+    max_logit, _ = torch.max(pseudo_logits, dim=1)
+    
+    # Standardize
+    mean_l = max_logit.mean()
+    std_l = max_logit.std()
+    scores["SML_Local"] = -((max_logit - mean_l) / (std_l + eps)).squeeze(0).cpu().numpy()
+
+    # --- UPGRADE 3: Energy Score (Replacing broken RbA) ---
+    # LogSumExp is a smoother, more robust version of MaxLogit.
+    # It acts as a "Free Energy" score.
+    energy = -torch.logsumexp(pseudo_logits, dim=1)
+    scores["Energy"] = energy.squeeze(0).cpu().numpy()
+
     return scores
 
 # --- 3. BUILDER ---
@@ -115,8 +130,8 @@ def main():
     parser.add_argument('--weights', default="eomt_pretrained.pth") 
     args = parser.parse_args()
 
-    device = torch.device('cpu')
-    print("--- SOLVING STEP 5: EoMT + RbA ---")
+    device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+    print(f"--- SOLVING STEP 5: ReAct + Energy (Optimized) on {device} ---")
 
     # A. INIT
     try:
@@ -158,10 +173,10 @@ def main():
         if os.path.exists(label_path):
             valid_pairs.append((jpg_path, label_path))
 
-    results = {"MSP": [], "MaxLogit": [], "MaxEntropy": [], "RbA": []}
+    results = {"MSP": [], "MaxEntropy": [], "SML_Local": [], "Energy": []}
     ground_truths = []
 
-    # Process all images   
+    # Process all images
     for i, (img_path, label_path) in enumerate(valid_pairs): 
         print(f"[{i+1}/{len(valid_pairs)}] {os.path.basename(img_path)}")
         img = Image.open(img_path).convert('RGB')
@@ -169,27 +184,39 @@ def main():
 
         with torch.no_grad():
             outputs = model(img_tensor)
-            pixel_probs = mask_to_pixel_probs(outputs, 512, 1024)
+            # ReAct is enabled inside here now
+            pixel_probs = mask_to_pixel_probs(outputs, 512, 1024, use_react=True)
 
         metrics = get_anomaly_scores(pixel_probs)
         for k, v in metrics.items():
             results[k].append(v.flatten())
 
         gt_mask = np.array(target_transform(Image.open(label_path)))
+        # Map label 2 (anomaly) to 1, everything else to 0
         ground_truths.append(np.where(gt_mask == 2, 1, 0).flatten())
 
     # D. TABLE
-    print("\n" + "="*50)
-    print(f"{'METHOD':<15} | {'AUPRC':<15} | {'FPR95':<15}")
-    print("-" * 50)
-    gts = np.concatenate(ground_truths)
-    for method in results:
-        preds = np.concatenate(results[method])
-        auprc = average_precision_score(gts, preds)
-        fpr, tpr, _ = roc_curve(gts, preds)
-        fpr95 = fpr[np.argmax(tpr >= 0.95)] if np.any(tpr >= 0.95) else 0.0
-        print(f"{method:<15} | {auprc:.4f}          | {fpr95:.4f}")
-    print("="*50)
+    print("\n" + "="*65)
+    print(f"{'METHOD':<15} | {'AUPRC (Higher is Better)':<25} | {'FPR95 (Lower is Better)':<25}")
+    print("-" * 65)
+    
+    if len(ground_truths) > 0:
+        gts = np.concatenate(ground_truths)
+        for method in results:
+            preds = np.concatenate(results[method])
+            
+            # Sanity check for NaNs
+            if np.isnan(preds).any():
+                print(f"Warning: {method} contains NaNs. Replacing with 0.")
+                preds = np.nan_to_num(preds)
+
+            auprc = average_precision_score(gts, preds)
+            fpr, tpr, _ = roc_curve(gts, preds)
+            fpr95 = fpr[np.argmax(tpr >= 0.95)] if np.any(tpr >= 0.95) else 0.0
+            print(f"{method:<15} | {auprc:.4f}                    | {fpr95:.4f}")
+    else:
+        print("No ground truth data found.")
+    print("="*65)
 
 if __name__ == '__main__':
     main()

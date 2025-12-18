@@ -132,8 +132,8 @@ def main():
     }
     ground_truths = []
 
-    # Limit to 5 images for speed (Remove [:5] for full run)
-    for i, (img_path, label_path) in enumerate(valid_pairs[:5]):
+    # run all images
+    for i, (img_path, label_path) in enumerate(valid_pairs):
         print(f"[{i+1}] {os.path.basename(img_path)}")
         img = Image.open(img_path).convert('RGB')
         img_tensor = input_transform(img).unsqueeze(0).to(device)
