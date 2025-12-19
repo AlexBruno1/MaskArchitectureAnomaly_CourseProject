@@ -128,7 +128,9 @@ def main():
         with torch.no_grad():
             result = model(images)
         if args.method == 'msp':
-            anomaly_result = 1.0 - np.max(result.squeeze(0).data.cpu().numpy(), axis=0) 
+            probs = torch.softmax(result, dim=1)
+            msp = probs.max(dim=1)[0]
+            anomaly_result = 1.0 - msp.squeeze(0).cpu().numpy()
         elif args.method == 'maxlogit':
             anomaly_result = -np.max(result.squeeze(0).data.cpu().numpy(), axis=0)
         elif args.method == 'maxentropy':
