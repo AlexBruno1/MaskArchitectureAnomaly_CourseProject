@@ -79,14 +79,12 @@ class cityscapes(Dataset):
         self.target_transform = target_transform
 
     def __getitem__(self, index):
-        filename = self.filenames[index]
-        filenameGt = self.filenamesGt[index]
+        image_path = self.filenames[index]
+        label_path = self.filenamesGt[index]
 
-        #print(filename)
-
-        with open(image_path_city(self.images_root, filename), 'rb') as f:
+        with open(image_path, 'rb') as f:
             image = load_image(f).convert('RGB')
-        with open(image_path_city(self.labels_root, filenameGt), 'rb') as f:
+        with open(label_path, 'rb') as f:
             label = load_image(f).convert('P')
 
         if self.input_transform is not None:
@@ -94,8 +92,10 @@ class cityscapes(Dataset):
         if self.target_transform is not None:
             label = self.target_transform(label)
 
-        return image, label, filename, filenameGt
+        return image, label, image_path, label_path
+
 
     def __len__(self):
-        return len(self.filenames)
+        return min(len(self.filenames), len(self.filenamesGt))
+
 
