@@ -1,0 +1,6 @@
+.vscode
+venv/
+cityscapes/
+Validation_Dataset/
+.github/
+__pycache__/
