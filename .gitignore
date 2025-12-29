@@ -1,0 +1,9 @@
+.vscode
+__pycache__
+Validation_Dataset
+.github
+gtFine_trainvaltest
+leftImg8bit_trainvaltest
+cityscapes
+trained_models
+trained_eomt

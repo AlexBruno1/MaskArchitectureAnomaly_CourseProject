@@ -1,6 +1,6 @@
 # Copyright (c) OpenMMLab. All rights reserved.
 import os
-import cv2
+#import cv2
 import glob
 import torch
 import random
@@ -12,6 +12,7 @@ from argparse import ArgumentParser
 from ood_metrics import fpr_at_95_tpr, calc_metrics, plot_roc, plot_pr,plot_barcode
 from sklearn.metrics import roc_auc_score, roc_curve, auc, precision_recall_curve, average_precision_score
 from torchvision.transforms import Compose, Resize, ToTensor, Normalize
+import torch.nn.functional as F
 
 seed = 42
 
@@ -30,7 +31,7 @@ input_transform = Compose(
     [
         Resize((512, 1024), Image.BILINEAR),
         ToTensor(),
-        # Normalize([.485, .456, .406], [.229, .224, .225]),
+        #Normalize([.485, .456, .406], [.229, .224, .225]),
     ]
 )
 
@@ -59,7 +60,11 @@ def main():
     parser.add_argument('--batch-size', type=int, default=1)
     parser.add_argument('--cpu', action='store_true')
     args = parser.parse_args()
-    anomaly_score_list = []
+    
+    # Lists for accumulating scores
+    msp_score_list = []
+    max_logit_score_list = []
+    max_entropy_score_list = []
     ood_gts_list = []
 
     if not os.path.exists('results.txt'):
@@ -97,10 +102,24 @@ def main():
     for path in glob.glob(os.path.expanduser(str(args.input[0]))):
         print(path)
         images = input_transform((Image.open(path).convert('RGB'))).unsqueeze(0).float().cuda()
-        images = images.permute(0,3,1,2)
+        #images = images.permute(0,3,1,2)
         with torch.no_grad():
-            result = model(images)
-        anomaly_result = 1.0 - np.max(result.squeeze(0).data.cpu().numpy(), axis=0)            
+            logits = model(images).squeeze(0) # [C, H, W]
+        
+        # 1. MSP (Maximum Softmax Probability)
+        probs = F.softmax(logits, dim=0)
+        msp_score = 1.0 - np.max(probs.cpu().numpy(), axis=0)
+
+        # 2. Max Logit
+        # Original code used 1.0 - max(logits). We keep this consistency.
+        logits_np = logits.cpu().numpy()
+        max_logit_score = 1.0 - np.max(logits_np, axis=0)
+
+        # 3. Max Entropy
+        # Entropy = -sum(p * log(p))
+        log_probs = F.log_softmax(logits, dim=0)
+        entropy = -torch.sum(probs * log_probs, dim=0).cpu().numpy()
+        max_entropy_score = entropy            
         pathGT = path.replace("images", "labels_masks")                
         if "RoadObsticle21" in pathGT:
            pathGT = pathGT.replace("webp", "png")
@@ -129,34 +148,46 @@ def main():
             continue              
         else:
              ood_gts_list.append(ood_gts)
-             anomaly_score_list.append(anomaly_result)
-        del result, anomaly_result, ood_gts, mask
+             msp_score_list.append(msp_score)
+             max_logit_score_list.append(max_logit_score)
+             max_entropy_score_list.append(max_entropy_score)
+        
+        del logits, probs, msp_score, max_logit_score, max_entropy_score, ood_gts, mask
         torch.cuda.empty_cache()
 
     file.write( "\n")
 
     ood_gts = np.array(ood_gts_list)
-    anomaly_scores = np.array(anomaly_score_list)
+    
+    # Dictionary of methods to evaluate
+    methods = {
+        "MSP": np.array(msp_score_list),
+        "Max_Logit": np.array(max_logit_score_list),
+        "Max_Entropy": np.array(max_entropy_score_list)
+    }
 
     ood_mask = (ood_gts == 1)
     ind_mask = (ood_gts == 0)
-
-    ood_out = anomaly_scores[ood_mask]
-    ind_out = anomaly_scores[ind_mask]
-
-    ood_label = np.ones(len(ood_out))
-    ind_label = np.zeros(len(ind_out))
     
-    val_out = np.concatenate((ind_out, ood_out))
-    val_label = np.concatenate((ind_label, ood_label))
+    file.write(f"{args.input[0]}\n")
+    for name, scores in methods.items():
+        ood_out = scores[ood_mask]
+        ind_out = scores[ind_mask]
 
-    prc_auc = average_precision_score(val_label, val_out)
-    fpr = fpr_at_95_tpr(val_out, val_label)
+        ood_label = np.ones(len(ood_out))
+        ind_label = np.zeros(len(ind_out))
+        
+        val_out = np.concatenate((ind_out, ood_out))
+        val_label = np.concatenate((ind_label, ood_label))
 
-    print(f'AUPRC score: {prc_auc*100.0}')
-    print(f'FPR@TPR95: {fpr*100.0}')
+        prc_auc = average_precision_score(val_label, val_out)
+        fpr = fpr_at_95_tpr(val_out, val_label)
 
-    file.write(('    AUPRC score:' + str(prc_auc*100.0) + '   FPR@TPR95:' + str(fpr*100.0) ))
+        print(f'[{name}] AUPRC score: {prc_auc*100.0}')
+        print(f'[{name}] FPR@TPR95: {fpr*100.0}')
+
+        file.write((f'    [{name}] AUPRC score:' + str(prc_auc*100.0) + '   FPR@TPR95:' + str(fpr*100.0) ))
+    
     file.close()
 
 if __name__ == '__main__':

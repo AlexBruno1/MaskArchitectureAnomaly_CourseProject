@@ -1,0 +1,8 @@
+
+../Validation_Dataset/RoadAnomaly21/images/*.png
+
+../Validation_Dataset/RoadAnomaly21/images/*.png
+    [MSP] AUPRC score:76.59153885434617   FPR@95TPR:98.05776566522866    [Max_Logit] AUPRC score:76.1825428099539   FPR@95TPR:97.71771782471762    [Max_Entropy] AUPRC score:75.40935607650086   FPR@95TPR:97.80595865560801
+..\trained_models\eomt_cityscapes.bin
+../Validation_Dataset/RoadAnomaly21/images/*.png
+    [MSP] AUPRC score:74.30631716875537   FPR@95TPR:33.461273466157586    [Max_Logit] AUPRC score:73.8744394480238   FPR@95TPR:33.575114934677394    [Max_Entropy] AUPRC score:76.83900910674127   FPR@95TPR:33.333801443631714
