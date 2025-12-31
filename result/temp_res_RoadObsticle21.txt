@@ -1,7 +1,7 @@
 
-trained_eomt/eomt_cityscapes.bin
-Validation_Dataset\RoadObsticle21\images\*.webp
-    [MSP] AUPRC score:90.19507384734251   FPR@95TPR:0.5464382460816546    [Max_Logit] AUPRC score:90.15022821709222   FPR@95TPR:0.5767131233364343    [Max_Entropy] AUPRC score:90.10406545772739   FPR@95TPR:0.6688315532740546
+trained_eomt\eomt_cityscapes.bin
+.\Validation_Dataset\RoadObsticle21\images\*.webp
+    [MSP] AUPRC score:82.4120958082889   FPR@95TPR:15.3259431633951    [Max_Logit] AUPRC score:81.6798818794718   FPR@95TPR:29.009300549798333    [Max_Entropy] AUPRC score:82.13861586161784   FPR@95TPR:29.593648399845996
 .\trained_eomt\temperature=0.01-epoch=20.ckpt
 Validation_Dataset\RoadObsticle21\images\*.webp
     [MSP] AUPRC score:53.19801057057998   FPR@95TPR:99.99920514914979    [Max_Logit] AUPRC score:44.70074490256032   FPR@95TPR:99.99915215909311    [Max_Entropy] AUPRC score:44.15424603898689   FPR@95TPR:99.99931112926315

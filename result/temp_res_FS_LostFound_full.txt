@@ -1,7 +1,7 @@
 
-trained_eomt/eomt_cityscapes.bin
+.\trained_eomt\eomt_cityscapes.bin
 Validation_Dataset\FS_LostFound_full\images\*.png
-    [MSP] AUPRC score:25.370417778987907   FPR@95TPR:14.886180675364107    [Max_Logit] AUPRC score:25.397872677315263   FPR@95TPR:14.629279450154648    [Max_Entropy] AUPRC score:27.95504347088112   FPR@95TPR:14.701562788800999
+    [MSP] AUPRC score:20.229485242717466   FPR@95TPR:18.944016756760863    [Max_Logit] AUPRC score:20.263947409584116   FPR@95TPR:18.566634886602955    [Max_Entropy] AUPRC score:23.26078100294775   FPR@95TPR:18.64428589892723
 .\trained_eomt\temperature=0.01-epoch=20.ckpt
 Validation_Dataset\FS_LostFound_full\images\*.png
     [MSP] AUPRC score:20.357725054293454   FPR@95TPR:29.577431593032706    [Max_Logit] AUPRC score:20.45541650957468   FPR@95TPR:28.57064951455573    [Max_Entropy] AUPRC score:22.016995171061865   FPR@95TPR:33.6819347824434

@@ -1,7 +1,7 @@
 
-trained_eomt/eomt_cityscapes.bin
+.\trained_eomt\eomt_cityscapes.bin
 Validation_Dataset\RoadAnomaly\images\*.jpg
-    [MSP] AUPRC score:75.68516460030607   FPR@95TPR:19.31990160754354    [Max_Logit] AUPRC score:75.16507695456392   FPR@95TPR:19.07108666414448    [Max_Entropy] AUPRC score:77.67094726495323   FPR@95TPR:18.80908370374212
+    [MSP] AUPRC score:71.73872950802046   FPR@95TPR:16.43210278582127    [Max_Logit] AUPRC score:71.3294303972491   FPR@95TPR:16.228923767979946    [Max_Entropy] AUPRC score:75.75656629165994   FPR@95TPR:16.07129985509296
 .\trained_eomt\temperature=0.01-epoch=20.ckpt
 Validation_Dataset\RoadAnomaly\images\*.jpg
     [MSP] AUPRC score:76.6403056059676   FPR@95TPR:17.775224621692452    [Max_Logit] AUPRC score:76.73112543836413   FPR@95TPR:18.48386422655958    [Max_Entropy] AUPRC score:75.72866454873197   FPR@95TPR:18.504226135306286
