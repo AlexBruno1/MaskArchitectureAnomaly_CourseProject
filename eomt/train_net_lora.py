@@ -18,66 +18,66 @@ from eomt.lora import inject_lora
 from main import LightningCLI
 
 # Use peft for LoRA
-class LoRASemantic(MaskClassificationSemantic):
-    def __init__(
-        self,
-        *args,
-        logit_norm_temperature=0.01,
-        lora_rank=8,
-        lora_alpha=16,
-        lora_dropout=0.1,
-        lora_targets=["qkv", "q_proj", "v_proj"],
-        **kwargs
-    ):
-        super().__init__(*args, **kwargs)
+# class LoRASemantic(MaskClassificationSemantic):
+#     def __init__(
+#         self,
+#         *args,
+#         logit_norm_temperature=0.01,
+#         lora_rank=8,
+#         lora_alpha=16,
+#         lora_dropout=0.1,
+#         lora_targets=["qkv", "q_proj", "v_proj"],
+#         **kwargs
+#     ):
+#         super().__init__(*args, **kwargs)
         
-        # Inject LoRA
-        logging.info(f"Injecting LoRA with r={lora_rank}, alpha={lora_alpha}, targets={lora_targets}")
-        # We need to wrap self.network.encoder.backbone or parts of it
-        # Based on ViT implementation in models/vit.py: self.network.encoder.backbone
+#         # Inject LoRA
+#         logging.info(f"Injecting LoRA with r={lora_rank}, alpha={lora_alpha}, targets={lora_targets}")
+#         # We need to wrap self.network.encoder.backbone or parts of it
+#         # Based on ViT implementation in models/vit.py: self.network.encoder.backbone
         
-        # inject_lora returns a PEFT model which wraps the original module.
-        # We replace the backbone with the PEFT wrapper.
-        # OR we wrap the whole encoder.
-        # OR we wrap the whole network. 
-        # PEFT wraps existing modules.
+#         # inject_lora returns a PEFT model which wraps the original module.
+#         # We replace the backbone with the PEFT wrapper.
+#         # OR we wrap the whole encoder.
+#         # OR we wrap the whole network. 
+#         # PEFT wraps existing modules.
         
-        self.network = inject_lora(
-            self.network, 
-            r=lora_rank, 
-            lora_alpha=lora_alpha, 
-            lora_dropout=lora_dropout,
-            target_modules=lora_targets
-        )
+#         self.network = inject_lora(
+#             self.network, 
+#             r=lora_rank, 
+#             lora_alpha=lora_alpha, 
+#             lora_dropout=lora_dropout,
+#             target_modules=lora_targets
+#         )
         
-        # Mark only LoRA params as trainable? inject_lora already prints trainable params.
-        # But we also have mask heads and class heads in EoMT.
-        # Usually for LoRA fine-tuning, heads might be trainable or not.
-        # If we only want to fine-tune LoRA, we should ensure heads are frozen OR if we want to fine-tune heads too.
-        # The prompt says "fine tune EoMT using LoRA". Typically implies LoRA + Heads or just LoRA.
-        # PEFT model sets requires_grad=False for non-adapter params.
-        # But our self.network is now the PEFT model.
-        # What about class_head and mask_head in EoMT class?
-        # They are part of self.network (EoMT).
-        # PEFT wraps the whole self.network.
-        # If inject_lora wraps self.network, then everything else is frozen by default unless modules_to_save is set.
-        # We should probably add "mask_head" and "class_head" to modules_to_save to keep them trainable
-        # as we are likely fine-tuning on a new dataset or refining.
-        # For this task, let's assume we want to keep them trainable. i.e. classifier fine-tuning.
+#         # Mark only LoRA params as trainable? inject_lora already prints trainable params.
+#         # But we also have mask heads and class heads in EoMT.
+#         # Usually for LoRA fine-tuning, heads might be trainable or not.
+#         # If we only want to fine-tune LoRA, we should ensure heads are frozen OR if we want to fine-tune heads too.
+#         # The prompt says "fine tune EoMT using LoRA". Typically implies LoRA + Heads or just LoRA.
+#         # PEFT model sets requires_grad=False for non-adapter params.
+#         # But our self.network is now the PEFT model.
+#         # What about class_head and mask_head in EoMT class?
+#         # They are part of self.network (EoMT).
+#         # PEFT wraps the whole self.network.
+#         # If inject_lora wraps self.network, then everything else is frozen by default unless modules_to_save is set.
+#         # We should probably add "mask_head" and "class_head" to modules_to_save to keep them trainable
+#         # as we are likely fine-tuning on a new dataset or refining.
+#         # For this task, let's assume we want to keep them trainable. i.e. classifier fine-tuning.
         
-        # Re-initialize criterion with LogitNorm
-        logging.info(f"Replacing criterion with LogitNormMaskClassificationLoss (temp={logit_norm_temperature})")
-        self.criterion = LogitNormMaskClassificationLoss(
-            temperature=logit_norm_temperature,
-            num_points=self.criterion.num_points,
-            oversample_ratio=self.criterion.oversample_ratio,
-            importance_sample_ratio=self.criterion.importance_sample_ratio,
-            mask_coefficient=self.criterion.mask_coefficient,
-            dice_coefficient=self.criterion.dice_coefficient,
-            class_coefficient=self.criterion.class_coefficient,
-            num_labels=self.criterion.num_labels, # reuse
-            no_object_coefficient=self.criterion.eos_coef,
-        )
+#         # Re-initialize criterion with LogitNorm
+#         logging.info(f"Replacing criterion with LogitNormMaskClassificationLoss (temp={logit_norm_temperature})")
+#         self.criterion = LogitNormMaskClassificationLoss(
+#             temperature=logit_norm_temperature,
+#             num_points=self.criterion.num_points,
+#             oversample_ratio=self.criterion.oversample_ratio,
+#             importance_sample_ratio=self.criterion.importance_sample_ratio,
+#             mask_coefficient=self.criterion.mask_coefficient,
+#             dice_coefficient=self.criterion.dice_coefficient,
+#             class_coefficient=self.criterion.class_coefficient,
+#             num_labels=self.criterion.num_labels, # reuse
+#             no_object_coefficient=self.criterion.eos_coef,
+#         )
 
 
 
@@ -151,29 +151,27 @@ class LoRACLI(LightningCLI):
             msg = model.load_state_dict(state_dict, strict=False)
             logging.info(f"Loaded weights with result: {msg}")
 
-        # Inject LoRA or Freeze for Head-Only
+        # Inject LoRA
         if hasattr(model, "network"):
+            head_targets = ["class_head", "mask_head", "q"]
+            
             if head_only:
-                logging.info("Head-Only mode: Freezing encoder and fine-tuning only EoMT heads.")
-                # Freeze everything first
-                for param in model.network.parameters():
-                    param.requires_grad = False
-                
-                # Unfreeze heads
-                for module_name in ["class_head", "mask_head", "q", "upscale"]:
-                    if hasattr(model.network, module_name):
-                        logging.info(f"Unfreezing {module_name}")
-                        for param in getattr(model.network, module_name).parameters():
-                            param.requires_grad = True
+                logging.info("Head-Only mode: Injecting LoRA into EoMT heads ONLY (Backbone ignored).")
+                targets = head_targets
             else:
-                logging.info(f"Injecting LoRA with r={lora_rank}, alpha={lora_alpha}, targets={lora_targets}")
-                model.network = inject_lora(
-                    model.network, 
-                    r=lora_rank, 
-                    lora_alpha=lora_alpha, 
-                    lora_dropout=lora_dropout,
-                    target_modules=lora_targets
-                )
+                # Combine backbone targets (from CLI) and head targets
+                # Using set to avoid duplicates if any
+                targets = list(set(lora_targets + head_targets))
+                logging.info(f"Standard mode: Injecting LoRA into Backbone AND Heads.")
+
+            logging.info(f"Injecting LoRA with r={lora_rank}, alpha={lora_alpha}, targets={targets}")
+            model.network = inject_lora(
+                model.network, 
+                r=lora_rank, 
+                lora_alpha=lora_alpha, 
+                lora_dropout=lora_dropout,
+                target_modules=targets
+            )
 
             if use_checkpointing:
                 logging.info("Enabling activation checkpointing for transformer blocks")
