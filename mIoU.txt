@@ -1,0 +1,10 @@
+                                                mIoU
+eomt_cityscapes                                 81.7
+temperature=0.01-epoch=20                       78.9
+temperature=0.04-epoch=20                       79.6
+temperature=0.1-epoch=20                        80.1
+temperature=0.3-epoch=20                        80.1
+temperature=0.7-epoch=20                        80.1
+temperature=1.2-epoch=20                        80.2
+temp=0.3-epoch=20-no_scale                      80.0
+temp=0.3-epoch=20-lora_rank=8-no_scale          80.0

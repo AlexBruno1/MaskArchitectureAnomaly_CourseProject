@@ -16,73 +16,90 @@ from training.mask_classification_semantic import MaskClassificationSemantic
 from training.logit_norm_loss import LogitNormMaskClassificationLoss
 from eomt.lora import inject_lora
 from main import LightningCLI
-
-# Use peft for LoRA
-# class LoRASemantic(MaskClassificationSemantic):
-#     def __init__(
-#         self,
-#         *args,
-#         logit_norm_temperature=0.01,
-#         lora_rank=8,
-#         lora_alpha=16,
-#         lora_dropout=0.1,
-#         lora_targets=["qkv", "q_proj", "v_proj"],
-#         **kwargs
-#     ):
-#         super().__init__(*args, **kwargs)
-        
-#         # Inject LoRA
-#         logging.info(f"Injecting LoRA with r={lora_rank}, alpha={lora_alpha}, targets={lora_targets}")
-#         # We need to wrap self.network.encoder.backbone or parts of it
-#         # Based on ViT implementation in models/vit.py: self.network.encoder.backbone
-        
-#         # inject_lora returns a PEFT model which wraps the original module.
-#         # We replace the backbone with the PEFT wrapper.
-#         # OR we wrap the whole encoder.
-#         # OR we wrap the whole network. 
-#         # PEFT wraps existing modules.
-        
-#         self.network = inject_lora(
-#             self.network, 
-#             r=lora_rank, 
-#             lora_alpha=lora_alpha, 
-#             lora_dropout=lora_dropout,
-#             target_modules=lora_targets
-#         )
-        
-#         # Mark only LoRA params as trainable? inject_lora already prints trainable params.
-#         # But we also have mask heads and class heads in EoMT.
-#         # Usually for LoRA fine-tuning, heads might be trainable or not.
-#         # If we only want to fine-tune LoRA, we should ensure heads are frozen OR if we want to fine-tune heads too.
-#         # The prompt says "fine tune EoMT using LoRA". Typically implies LoRA + Heads or just LoRA.
-#         # PEFT model sets requires_grad=False for non-adapter params.
-#         # But our self.network is now the PEFT model.
-#         # What about class_head and mask_head in EoMT class?
-#         # They are part of self.network (EoMT).
-#         # PEFT wraps the whole self.network.
-#         # If inject_lora wraps self.network, then everything else is frozen by default unless modules_to_save is set.
-#         # We should probably add "mask_head" and "class_head" to modules_to_save to keep them trainable
-#         # as we are likely fine-tuning on a new dataset or refining.
-#         # For this task, let's assume we want to keep them trainable. i.e. classifier fine-tuning.
-        
-#         # Re-initialize criterion with LogitNorm
-#         logging.info(f"Replacing criterion with LogitNormMaskClassificationLoss (temp={logit_norm_temperature})")
-#         self.criterion = LogitNormMaskClassificationLoss(
-#             temperature=logit_norm_temperature,
-#             num_points=self.criterion.num_points,
-#             oversample_ratio=self.criterion.oversample_ratio,
-#             importance_sample_ratio=self.criterion.importance_sample_ratio,
-#             mask_coefficient=self.criterion.mask_coefficient,
-#             dice_coefficient=self.criterion.dice_coefficient,
-#             class_coefficient=self.criterion.class_coefficient,
-#             num_labels=self.criterion.num_labels, # reuse
-#             no_object_coefficient=self.criterion.eos_coef,
-#         )
-
-
-
-
+import math
+import torch.nn.functional as F
 from typing import List
+
+def interpolate_pos_embed(state_dict, model_network):
+    # Try to find the pos_embed key
+    key = 'network.encoder.backbone.pos_embed'
+    if key not in state_dict:
+        key = 'encoder.backbone.pos_embed'
+    
+    if key not in state_dict:
+        return
+
+    pos_embed_checkpoint = state_dict[key]
+    
+    # Access model pos_embed directly to get target shape
+    if hasattr(model_network.encoder.backbone, "pos_embed"):
+        pos_embed_model = model_network.encoder.backbone.pos_embed
+    elif hasattr(model_network.encoder.backbone, "_pos_embed"):
+         pos_embed_model = model_network.encoder.backbone.pos_embed
+    else:
+        logging.warning("Could not find pos_embed in model network. Skipping interpolation.")
+        return
+
+    if pos_embed_checkpoint.shape != pos_embed_model.shape:
+        logging.info(f"Interpolating pos_embed from {pos_embed_checkpoint.shape} to {pos_embed_model.shape}")
+        
+        # Determine number of prefix tokens (CLS, REG, etc.)
+        # We need to be careful: sometimes pos_embed includes them, sometimes not (perfect square).
+        num_prefix_tokens = 0
+        if hasattr(model_network.encoder.backbone, "num_prefix_tokens"):
+             num_prefix_tokens = model_network.encoder.backbone.num_prefix_tokens
+        
+        embed_dim = pos_embed_model.shape[-1]
+        old_total_tokens = pos_embed_checkpoint.shape[1]
+        
+        # Heuristic: Check if total tokens is a perfect square -> assume 0 prefix tokens in this tensor
+        if int(math.sqrt(old_total_tokens)) ** 2 == old_total_tokens:
+            num_prefix_tokens = 0
+        
+        old_patch_tokens = old_total_tokens - num_prefix_tokens
+        old_grid_size = int(math.sqrt(old_patch_tokens))
+        
+        # New dimensions
+        new_total_tokens = pos_embed_model.shape[1]
+        # Same logic for new shape? Usually yes.
+        # But if model has prefix tokens defined, new_pos_embed likely has them too if not perfect square.
+        # However, warning showed [1, 1600, 768] which is 40x40.
+        # So we should apply the same check or just use the target grid size derived purely if it's square.
+        if int(math.sqrt(new_total_tokens)) ** 2 == new_total_tokens:
+            # If target is perfect square, we shouldn't append prefix tokens to it
+            # But if we stripped them from source, we are good.
+            new_patch_tokens = new_total_tokens
+        else:
+            new_patch_tokens = new_total_tokens - num_prefix_tokens
+            
+        new_grid_size = int(math.sqrt(new_patch_tokens))
+        
+        # Split prefix and patch tokens
+        if num_prefix_tokens > 0:
+            prefix_tokens = pos_embed_checkpoint[:, :num_prefix_tokens, :]
+            patch_tokens = pos_embed_checkpoint[:, num_prefix_tokens:, :]
+        else:
+            prefix_tokens = None
+            patch_tokens = pos_embed_checkpoint
+        
+        # Reshape to (1, H, W, D) -> (1, D, H, W) for interpolation
+        patch_tokens = patch_tokens.reshape(1, old_grid_size, old_grid_size, embed_dim).permute(0, 3, 1, 2)
+        
+        # Bicubic interpolation
+        patch_tokens = F.interpolate(patch_tokens, size=(new_grid_size, new_grid_size), mode='bicubic', align_corners=False)
+        
+        # Reshape back to (1, N, D)
+        patch_tokens = patch_tokens.permute(0, 2, 3, 1).reshape(1, -1, embed_dim)
+        
+        # Concatenate prefix and interpolated patch tokens
+        if prefix_tokens is not None and new_total_tokens != new_patch_tokens:
+             # Only concat if target expects prefix tokens
+            new_pos_embed = torch.cat((prefix_tokens, patch_tokens), dim=1)
+        else:
+            new_pos_embed = patch_tokens
+        
+        # Update state_dict
+        state_dict[key] = new_pos_embed
 
 class LoRACLI(LightningCLI):
     def add_arguments_to_parser(self, parser):
@@ -91,7 +108,7 @@ class LoRACLI(LightningCLI):
         parser.add_argument("--logit_norm_temperature", type=float, default=0.04, help="Temperature for Logit Normalization")
         parser.add_argument("--lora_alpha", type=int, default=16, help="LoRA alpha scaling")
         parser.add_argument("--lora_dropout", type=float, default=0.1, help="LoRA dropout")
-        parser.add_argument("--lora_targets", type=List[str], default=["qkv", "q_proj", "v_proj"], help="Modules names to inject LoRA into")
+        parser.add_argument("--lora_targets", type=List[str], default=["class_head", "mask_head", "q"], help="Modules names to inject LoRA into")
         parser.add_argument("--head_only", action="store_true", help="Fine-tune only prediction heads (saves memory)")
         parser.add_argument("--activation_checkpointing", action="store_true", help="Use activation checkpointing to save memory")
         parser.add_argument("--pretrained_path", type=str, default=None, help="Path to pretrained weights (.bin or .ckpt)")
@@ -129,6 +146,7 @@ class LoRACLI(LightningCLI):
             
             # Let's try to be smart about prefixes
             model_keys = set(model.state_dict().keys())
+            
             if not all(k in model_keys for k in state_dict.keys()):
                 logging.info("Attempting to fix state dict prefixes...")
                 new_state_dict = {}
@@ -138,15 +156,14 @@ class LoRACLI(LightningCLI):
                     elif f"network.{k}" in model_keys:
                         new_state_dict[f"network.{k}"] = v
                     else:
-                        logging.warning(f"Key {k} not found in model")
+                        pass # logging.warning(f"Key {k} not found in model")
                 state_dict = new_state_dict
+                print(f"[DEBUG] Fixed state dict keys: {len(state_dict)} keys kept.")
+            else:
+                 print("[DEBUG] Keys matched perfectly (or were subset).")
 
-            # Check for pos_embed size mismatch
-            for k in list(state_dict.keys()):
-                if "pos_embed" in k:
-                    if state_dict[k].shape != model.state_dict()[k].shape:
-                        logging.warning(f"Shape mismatch for {k}: {state_dict[k].shape} vs {model.state_dict()[k].shape}. Skipping {k} to use model initialization.")
-                        del state_dict[k]
+            # Interpolate pos_embed if needed
+            interpolate_pos_embed(state_dict, model.network)
 
             msg = model.load_state_dict(state_dict, strict=False)
             logging.info(f"Loaded weights with result: {msg}")
@@ -161,8 +178,8 @@ class LoRACLI(LightningCLI):
             else:
                 # Combine backbone targets (from CLI) and head targets
                 # Using set to avoid duplicates if any
-                targets = list(set(lora_targets + head_targets))
-                logging.info(f"Standard mode: Injecting LoRA into Backbone AND Heads.")
+                targets = list(set(lora_targets))
+                logging.info(f"Standard mode: Injecting LoRA into {targets}")
 
             logging.info(f"Injecting LoRA with r={lora_rank}, alpha={lora_alpha}, targets={targets}")
             model.network = inject_lora(

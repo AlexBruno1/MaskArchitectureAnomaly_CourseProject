@@ -35,6 +35,7 @@ from torchvision.transforms.v2.functional import pad
 import logging
 
 from training.two_stage_warmup_poly_schedule import TwoStageWarmupPolySchedule
+from training.utils.checkpoint import fix_state_dict_keys
 
 bold_green = "\033[1;32m"
 reset = "\033[0m"
@@ -882,6 +883,10 @@ class LightningModule(lightning.LightningModule):
         ckpt = torch.load(ckpt_path, map_location="cpu", weights_only=True)
         if "state_dict" in ckpt:
             ckpt = ckpt["state_dict"]
+        
+        # FIX: Remap keys if necessary
+        ckpt = fix_state_dict_keys(ckpt, self)
+        
         ckpt = {k: v for k, v in ckpt.items() if "criterion.empty_weight" not in k}
         if not load_ckpt_class_head:
             ckpt = {
