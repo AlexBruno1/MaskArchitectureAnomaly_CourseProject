@@ -5,7 +5,10 @@
 # Portions of this file are adapted from PyTorch Lightning,
 # used under the Apache 2.0 License.
 # ---------------------------------------------------------------
-
+import os
+# Workaround for Windows OpenMP runtime conflict (libomp vs libiomp5md)
+# Set before importing torch/numpy/timm/transformers to take effect
+os.environ.setdefault("KMP_DUPLICATE_LIB_OK", "TRUE")
 
 import jsonargparse._typehints as _t
 from types import MethodType

@@ -1,0 +1,22 @@
+
+trained_eomt/eomt_cityscapes.bin
+Validation_Dataset\RoadAnomaly\images\*.jpg
+    [MSP] AUPRC score:75.68516460030607   FPR@95TPR:19.31990160754354    [Max_Logit] AUPRC score:75.16507695456392   FPR@95TPR:19.07108666414448    [Max_Entropy] AUPRC score:77.67094726495323   FPR@95TPR:18.80908370374212
+.\trained_eomt\temperature=0.01-epoch=20.ckpt
+Validation_Dataset\RoadAnomaly\images\*.jpg
+    [MSP] AUPRC score:76.6403056059676   FPR@95TPR:17.775224621692452    [Max_Logit] AUPRC score:76.73112543836413   FPR@95TPR:18.48386422655958    [Max_Entropy] AUPRC score:75.72866454873197   FPR@95TPR:18.504226135306286
+.\trained_eomt\temperature=0.04-epoch=20.ckpt
+Validation_Dataset\RoadAnomaly\images\*.jpg
+    [MSP] AUPRC score:78.57353526204834   FPR@95TPR:19.42913716789694    [Max_Logit] AUPRC score:78.62843598162993   FPR@95TPR:19.217723206135158    [Max_Entropy] AUPRC score:76.69938074963996   FPR@95TPR:19.034155496232653
+.\trained_eomt\temperature=0.3-epoch=20.ckpt
+Validation_Dataset\RoadAnomaly\images\*.jpg
+    [MSP] AUPRC score:80.93648797107866   FPR@95TPR:18.151158895149912    [Max_Logit] AUPRC score:80.96518920395152   FPR@95TPR:18.012465592761373    [Max_Entropy] AUPRC score:78.27776281641742   FPR@95TPR:17.696907542080893
+.\trained_eomt\temperature=0.7-epoch=20.ckpt
+Validation_Dataset\RoadAnomaly\images\*.jpg
+    [MSP] AUPRC score:80.60057841816437   FPR@95TPR:17.075665120104023    [Max_Logit] AUPRC score:80.49083400524647   FPR@95TPR:16.860647100945428    [Max_Entropy] AUPRC score:78.33479402114578   FPR@95TPR:16.625381647561994
+.\trained_eomt\temperature=0.1-epoch=20.ckpt
+Validation_Dataset\RoadAnomaly\images\*.jpg
+    [MSP] AUPRC score:79.01325798979929   FPR@95TPR:22.880964325699367    [Max_Logit] AUPRC score:79.03095947466106   FPR@95TPR:22.468799627723662    [Max_Entropy] AUPRC score:77.71860915166461   FPR@95TPR:22.365480306658565
+.\trained_eomt\temperature=1.2-epoch=20.ckpt
+Validation_Dataset\RoadAnomaly\images\*.jpg
+    [MSP] AUPRC score:80.95617862184291   FPR@95TPR:17.52254905478686    [Max_Logit] AUPRC score:80.93119310329726   FPR@95TPR:17.339140446979847    [Max_Entropy] AUPRC score:78.2952514736971   FPR@95TPR:17.108467232979855

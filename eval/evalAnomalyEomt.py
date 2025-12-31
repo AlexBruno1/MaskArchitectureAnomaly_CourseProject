@@ -158,15 +158,16 @@ def main():
     parser.add_argument("--skip_class_head", action="store_true", help="Skip loading classification head from checkpoint")
     parser.add_argument("--disable_masked_attn", action="store_true", help="Disable masked attention at inference")
     parser.add_argument("--cpu", action="store_true", help="Force CPU inference")
+    parser.add_argument("--result_file", type=str, default="results_eomt.txt", help="path to result file")
     args = parser.parse_args()
 
     device = torch.device("cpu" if args.cpu or not torch.cuda.is_available() else "cuda")
 
     input_transform, target_transform = build_transforms(args.img_height, args.img_width)
 
-    if not os.path.exists("results_eomt.txt"):
-        open("results_eomt.txt", "w").close()
-    file = open("results_eomt.txt", "a")
+    if not os.path.exists(args.result_file):
+        open(args.result_file, "w").close()
+    file = open(args.result_file, "a")
 
     model = build_model(args, device)
 
