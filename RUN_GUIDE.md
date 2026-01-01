@@ -68,14 +68,17 @@ These arguments can be passed via command line or defined in limits config file 
 
 | Argument | Type | Default | Description |
 | :--- | :--- | :--- | :--- |
-| `--lora_rank` | int | `8` | Rank of LoRA adapters. |
-| `--lora_alpha` | int | `16` | LoRA alpha scaling factor. |
-| `--lora_dropout` | float | `0.1` | Dropout probability for LoRA layers. |
+| `--lora_rank` | int | `32` | Rank of LoRA adapters. |
+| `--lora_alpha` | int | `64` | LoRA alpha scaling factor. |
+| `--lora_dropout` | float | `0.0` | Dropout probability for LoRA layers. |
 | `--lora_targets` | list | `["qkv", "q_proj", "v_proj"]` | List of module names to inject LoRA into. |
 | `--logit_norm_temperature` | float | `0.04` | Temperature for Logit Normalization loss. |
 | `--head_only` | flag | `False` | If set, freezes the encoder and trains only classification heads. |
 | `--activation_checkpointing` | flag | `False` | Enables gradient checkpointing to save memory. |
 | `--pretrained_path` | str | `None` | Path to initialize weights from before training starts. |
+
+#### Note:
+- If you use a different lora_alpha then 64, you should also change the lora_alpha in eomt\training\utils\checkpoint.py line 74
 
 ### Standard Lightning CLI Arguments
 You also need to specify the model and data configuration:

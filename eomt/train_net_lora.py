@@ -104,10 +104,10 @@ def interpolate_pos_embed(state_dict, model_network):
 class LoRACLI(LightningCLI):
     def add_arguments_to_parser(self, parser):
         # Add LoRA specific arguments as top-level subcommand args
-        parser.add_argument("--lora_rank", type=int, default=8, help="Rank of LoRA adapters")
+        parser.add_argument("--lora_rank", type=int, default=32, help="Rank of LoRA adapters")
         parser.add_argument("--logit_norm_temperature", type=float, default=0.04, help="Temperature for Logit Normalization")
-        parser.add_argument("--lora_alpha", type=int, default=16, help="LoRA alpha scaling")
-        parser.add_argument("--lora_dropout", type=float, default=0.1, help="LoRA dropout")
+        parser.add_argument("--lora_alpha", type=int, default=64, help="LoRA alpha scaling")
+        parser.add_argument("--lora_dropout", type=float, default=0, help="LoRA dropout")
         parser.add_argument("--lora_targets", type=List[str], default=["class_head", "mask_head", "q"], help="Modules names to inject LoRA into")
         parser.add_argument("--head_only", action="store_true", help="Fine-tune only prediction heads (saves memory)")
         parser.add_argument("--activation_checkpointing", action="store_true", help="Use activation checkpointing to save memory")

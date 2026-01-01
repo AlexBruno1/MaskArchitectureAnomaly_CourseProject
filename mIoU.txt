@@ -9,3 +9,5 @@ temperature=1.2-epoch=20                        80.2
 temp=0.3-epoch=20-no_scale                      80.0
 temp=0.3-epoch=20-lora_rank=8-no_scale          80.0
 t=0.3-r=8-no_scale-interpolate                  80.0
+1024-t=0.3-r=8-epoch=10                         81.9
+1024-t=0.3-r=16-a=16-epoch=10                   81.9
