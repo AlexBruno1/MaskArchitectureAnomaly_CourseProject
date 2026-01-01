@@ -9,9 +9,9 @@ def main():
     parser = argparse.ArgumentParser(description="Run Anomaly Evaluation on multiple datasets")
     parser.add_argument("--ckpt_path", required=True, help="Path to the model checkpoint (.ckpt or .bin)")
     parser.add_argument("--dataset_root", required=True, help="Path to the folder containing the datasets (e.g. Validation_Dataset)")
-    parser.add_argument("--result_dir", default="result", help="Directory to save the results")
-    parser.add_argument("--img_height", type=int, default=640, help="Image height for evaluation")
-    parser.add_argument("--img_width", type=int, default=640, help="Image width for evaluation")
+    parser.add_argument("--result_dir", default="result-1024x1024", help="Directory to save the results")
+    parser.add_argument("--img_height", type=int, default=1024, help="Image height for evaluation")
+    parser.add_argument("--img_width", type=int, default=1024, help="Image width for evaluation")
     args = parser.parse_args()
 
     # Create result directory if it doesn't exist

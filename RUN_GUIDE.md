@@ -93,7 +93,7 @@ python train_net_lora.py fit `
   --pretrained_path="../trained_eomt/eomt_cityscapes.bin" `
   --trainer.max_epochs=20 `
   --trainer.check_val_every_n_epoch 20 `
-  --data.init_args.img_size="[640, 640]" `
+  --data.init_args.img_size="[1024, 1024]" `
   --data.init_args.batch_size=4 `
   --trainer.accumulate_grad_batches=4 `
   --data.init_args.path="cityscapes" --logit_norm_temperature 1.2
