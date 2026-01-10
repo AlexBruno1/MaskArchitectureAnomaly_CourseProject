@@ -7,3 +7,8 @@ For instructions, please refer to the README in each folder:
 * [eval](eval) contains tools for evaluating/visualizing the an ERFNet model's output and performing anomaly segmentation.
 * [trained_models](trained_models) Contains the ERFNet trained models for the baseline eval. 
 * [eomt](eomt) It is almost the original folder of the EoMT project. Inside it you will find code to train and pretrained checkpoints for EoMT.
+
+
+
+change dataset path, temperature [0.5, 0.75, 1, 1.1, 1.2, 2] and method(msp, maxlogit, maxentropy, rba)
+python evalAnomaly.py --ckpt checkpoints/eomt_cityscapes.bin --input "../dataset/anomaly/RoadObsticle21/images/*.*" --method msp --temp 0.5
