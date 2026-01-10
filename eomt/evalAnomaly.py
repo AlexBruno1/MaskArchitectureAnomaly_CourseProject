@@ -128,6 +128,7 @@ def main():
     )
     parser.add_argument(
         "--temp",
+        type=float,
         default=1
     )
     parser.add_argument(
