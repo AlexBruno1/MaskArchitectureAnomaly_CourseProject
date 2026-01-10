@@ -129,7 +129,7 @@ def main():
     parser.add_argument(
         "--temp",
         type=float,
-        default=1
+        default=1.0
     )
     parser.add_argument(
         "--ckpt",
