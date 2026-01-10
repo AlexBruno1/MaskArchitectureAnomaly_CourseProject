@@ -5,9 +5,10 @@ import random
 import numpy as np
 from PIL import Image
 from argparse import ArgumentParser
-
-from sklearn.metrics import roc_curve, average_precision_score
 import torch.nn.functional as F
+from sklearn.metrics import roc_curve, average_precision_score
+from torchvision.transforms import Compose, Resize, ToTensor
+from torchvision.transforms import InterpolationMode
 
 from models.eomt import EoMT
 from models.vit import ViT
@@ -18,6 +19,9 @@ random.seed(seed)
 np.random.seed(seed)
 torch.manual_seed(seed)
 
+torch.backends.cudnn.deterministic = True
+torch.backends.cudnn.benchmark = True
+
 NUM_CLASSES = 19
 MODEL_IMG_SIZE = (1024, 1024)
 PATCH_SIZE = 16
@@ -25,11 +29,15 @@ NUM_QUERIES = 100
 NUM_BLOCKS = 3
 BACKBONE_NAME = "vit_base_patch14_reg4_dinov2"
 
-def input_transform(img, target_size=MODEL_IMG_SIZE):
-    img = img.resize((target_size[1], target_size[0]), Image.BILINEAR)  # (width, height) for PIL
-    img_array = np.array(img, dtype=np.float32)  # Shape: (H, W, C), range [0, 255]
-    img_tensor = torch.from_numpy(img_array).permute(2, 0, 1)  # Shape: (C, H, W)
-    return img_tensor
+def build_transforms(img_height: int, img_width: int):
+    input_t = Compose(
+        [
+            Resize((img_height, img_width), InterpolationMode.BILINEAR),
+            ToTensor(),
+        ]
+    )
+    target_t = Compose([Resize((img_height, img_width), InterpolationMode.NEAREST)])
+    return input_t, target_t
 
 def fpr_at_95_tpr(preds, labels, pos_label=1):
     """Return the FPR when TPR is at minimum 95%.
@@ -59,10 +67,9 @@ def fpr_at_95_tpr(preds, labels, pos_label=1):
 def build_model(ckpt_path, device):
     encoder = ViT(
         img_size=MODEL_IMG_SIZE,
-        backbone_name=BACKBONE_NAME,
         patch_size=PATCH_SIZE,
+        backbone_name=BACKBONE_NAME,
     )
-    
     network = EoMT(
         encoder=encoder,
         num_classes=NUM_CLASSES,
@@ -70,32 +77,47 @@ def build_model(ckpt_path, device):
         num_blocks=NUM_BLOCKS,
         masked_attn_enabled=True,
     )
-    
+
     model = MaskClassificationSemantic(
         network=network,
         img_size=MODEL_IMG_SIZE,
         num_classes=NUM_CLASSES,
         attn_mask_annealing_enabled=False,
+        attn_mask_annealing_start_steps=None,
+        attn_mask_annealing_end_steps=None,
+        ckpt_path=ckpt_path,
+        delta_weights=False,
+        load_ckpt_class_head=True,
     )
-    
-    print(f"Loading checkpoint from: {ckpt_path}")
-    state_dict = torch.load(ckpt_path, map_location=device, weights_only=True)
-    
-    if "state_dict" in state_dict:
-        state_dict = state_dict["state_dict"]
-    
-    state_dict = {k: v for k, v in state_dict.items() if "criterion.empty_weight" not in k}
-    
-    incompatible = model.load_state_dict(state_dict, strict=False)
-    if incompatible.missing_keys:
-        print(f"[WARNING] Missing keys: {incompatible.missing_keys}")
-    if incompatible.unexpected_keys:
-        print(f"[WARNING] Unexpected keys: {incompatible.unexpected_keys}")
-    
+
     model.eval()
     model.to(device)
-    
     return model
+
+
+def to_per_pixel_logits(mask_logits: torch.Tensor, class_logits: torch.Tensor):
+    class_probs = class_logits.softmax(dim=-1)[..., :-1]
+    return torch.einsum("bqhw,bqc->bchw", mask_logits.sigmoid(), class_probs)
+
+def load_mask(path: str, target_transform):
+    mask = Image.open(path)
+    mask = target_transform(mask)
+    ood_gts = np.array(mask)
+    if ood_gts.ndim == 3:
+        ood_gts = ood_gts.squeeze(0)
+
+    if "RoadAnomaly" in path:
+        ood_gts = np.where((ood_gts == 2), 1, ood_gts)
+    if "LostAndFound" in path:
+        ood_gts = np.where((ood_gts == 0), 255, ood_gts)
+        ood_gts = np.where((ood_gts == 1), 0, ood_gts)
+        ood_gts = np.where((ood_gts > 1) & (ood_gts < 201), 1, ood_gts)
+    if "Streethazard" in path:
+        ood_gts = np.where((ood_gts == 14), 255, ood_gts)
+        ood_gts = np.where((ood_gts < 20), 0, ood_gts)
+        ood_gts = np.where((ood_gts == 255), 1, ood_gts)
+
+    return ood_gts
 
 def main():
     parser = ArgumentParser()
@@ -103,6 +125,10 @@ def main():
     parser.add_argument(
         "--input",
         required=True,
+    )
+    parser.add_argument(
+        "--temp",
+        default=1
     )
     parser.add_argument(
         "--ckpt",
@@ -125,6 +151,8 @@ def main():
     else:
         device = "cuda"
 
+    input_transform, target_transform = build_transforms(MODEL_IMG_SIZE[0], MODEL_IMG_SIZE[1])
+
     model = build_model(args.ckpt, device)
     print("[OK] EoMT loaded correctly")
 
@@ -139,84 +167,82 @@ def main():
     print(f"Processing {len(image_paths)} images...")
 
     for idx, img_path in enumerate(image_paths):
-        img = Image.open(img_path).convert("RGB")
-        original_size = img.size  # (width, height) - PIL format
-        img_tensor = input_transform(img).unsqueeze(0).to(device)  # Shape: (1, C, H, W), range [0, 255]
+        print(img_path)
+        img = input_transform(Image.open(img_path).convert("RGB"))
+        img = img.unsqueeze(0).to(device)
 
         with torch.no_grad():
-            mask_logits_per_layer, class_logits_per_layer = model(img_tensor)
-            
-            mask_logits = mask_logits_per_layer[-1]  # Shape: (B, num_queries, H, W)
-            class_logits = class_logits_per_layer[-1]  # Shape: (B, num_queries, num_classes+1)
-            
-            mask_logits = F.interpolate(mask_logits, model.img_size, mode="bilinear")
-            
-            if args.method == "rba":
-                mask_logits_full = F.interpolate(
-                    mask_logits,
-                    size=(original_size[1], original_size[0]),
-                    mode="bilinear",
-                    align_corners=False
-                )
-            
-            logits = model.to_per_pixel_logits_semantic(mask_logits, class_logits)
-            
-            logits = F.interpolate(
-                logits, 
-                size=(original_size[1], original_size[0]), 
-                mode="bilinear", 
-                align_corners=False
-            )
+            mask_logits_list, class_logits_list = model.network(img)
+
+        mask_logits = mask_logits_list[-1]
+        class_logits = class_logits_list[-1]
+
+        mask_logits = F.interpolate(
+            mask_logits,
+            size=MODEL_IMG_SIZE,
+            mode="bilinear",
+            align_corners=False,
+        )
+
+        per_pixel_logits = to_per_pixel_logits(mask_logits, class_logits).squeeze(0)
+        per_pixel_logits = per_pixel_logits/args.temp
 
         if args.method == "msp":
-            probs = torch.softmax(logits, dim=1)
-            msp = probs.max(dim=1)[0]
-            score = 1.0 - msp.squeeze(0).cpu().numpy()
+            probs = probs = F.softmax(per_pixel_logits, dim=0)
+            score = 1.0 - torch.max(probs, dim=0).values
+            score = score.cpu().numpy()
 
         elif args.method == "maxlogit":
-            score = -np.max(logits.squeeze(0).data.cpu().numpy(), axis=0)
+            score = -torch.max(per_pixel_logits, dim=0).values
+            score = score.cpu().numpy()
 
         elif args.method == "maxentropy":
-            probs = torch.softmax(logits, dim=1)
-            p = probs.squeeze(0).cpu().numpy()
-            entropy = -np.sum(p * np.log(np.clip(p, 1e-12, 1.0)), axis=0)
-            score = entropy
+            probs = F.softmax(per_pixel_logits, dim=0)
+            log_probs = torch.log_softmax(per_pixel_logits, dim=0)
+            score = -(probs * log_probs).sum(dim=0)
+            score = score.cpu().numpy()
 
         elif args.method == "rba":
-            
-            mask_probs = mask_logits_full.sigmoid()  # (B, Q, H, W)
-            class_probs = class_logits.softmax(dim=-1)[..., :-1]  # (B, Q, num_classes)            
-            max_class_probs = class_probs.max(dim=-1)[0]  # (B, Q)
-            query_scores = mask_probs * max_class_probs[:, :, None, None]  # (B, Q, H, W)
-            max_query_score = query_scores.max(dim=1)[0]  # (B, H, W)
-            score = 1.0 - max_query_score
+            mask_probs = mask_logits.sigmoid()
+            class_probs = class_logits.softmax(dim=-1)[..., :-1]
+            max_class_probs = class_probs.max(dim=-1)[0]
+            query_scores = mask_probs * max_class_probs[:, :, None, None]
+            max_query_score = query_scores.max(dim=1)[0]
+            score = (1.0 - max_query_score).squeeze(0).cpu().numpy()
 
-        gt_path = img_path.replace("images", "labels_masks")
-        gt_path = os.path.splitext(gt_path)[0] + ".png"
+        pathGT = img_path.replace("images", "labels_masks")
+        if "RoadObsticle21" in pathGT:
+            pathGT = pathGT.replace("webp", "png")
+        if "fs_static" in pathGT:
+            pathGT = pathGT.replace("jpg", "png")
+        if "RoadAnomaly" in pathGT:
+            pathGT = pathGT.replace("jpg", "png")
 
-        if not os.path.exists(gt_path):
-            print(f"[WARNING] GT not found: {gt_path}")
+        if not os.path.exists(pathGT):
+            print(f"[WARNING] GT not found: {pathGT}")
             continue
 
-        gt = Image.open(gt_path)
-        gt = gt.resize(original_size, Image.NEAREST)
-        gt = np.array(gt)
-        gt = np.where(gt > 0, 1, 0)
+        ood_gts = load_mask(pathGT, target_transform)
 
-        if 1 not in np.unique(gt):
+        if 1 not in np.unique(ood_gts):
             continue
 
-        anomaly_scores.append(score[gt == 1])
-        anomaly_labels.append(np.ones_like(score[gt == 1]))
+        anomaly_scores.append(score[ood_gts == 1])
+        anomaly_labels.append(np.ones_like(score[ood_gts == 1]))
 
-        anomaly_scores.append(score[gt == 0])
-        anomaly_labels.append(np.zeros_like(score[gt == 0]))
+        anomaly_scores.append(score[ood_gts == 0])
+        anomaly_labels.append(np.zeros_like(score[ood_gts == 0]))
+
+
+        del mask_logits, class_logits, per_pixel_logits
+        torch.cuda.empty_cache()
 
         if (idx + 1) % 10 == 0:
             print(f"  Processed {idx + 1}/{len(image_paths)} images")
 
-    if len(anomaly_scores) == 0:
-        raise RuntimeError("[ERROR] No valid OOD pixels found")
+    if not anomaly_scores:
+        print("No OOD pixels found in provided dataset.")
+        return
 
     scores = np.concatenate(anomaly_scores)
     labels = np.concatenate(anomaly_labels)
@@ -231,6 +257,8 @@ def main():
     if not os.path.exists('results.txt'):
         open('results.txt', 'w').close()
     file = open('results.txt', 'a')
+    file.write("METHOD  " + str(args.method) + "\n")
+    file.write("TEMP    " + str(args.temp) + "\n")
     file.write(('    AUPRC score:' + str(auprc*100.0) + '   FPR@TPR95:' + str(fpr95*100.0) ))
     file.write( "\n")
     file.close()
