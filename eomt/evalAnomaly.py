@@ -258,6 +258,7 @@ def main():
     if not os.path.exists('results.txt'):
         open('results.txt', 'w').close()
     file = open('results.txt', 'a')
+    file.write("DATASET  " + str(args.input) + "\n")
     file.write("METHOD  " + str(args.method) + "\n")
     file.write("TEMP    " + str(args.temp) + "\n")
     file.write(('    AUPRC score:' + str(auprc*100.0) + '   FPR@TPR95:' + str(fpr95*100.0) ))
