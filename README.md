@@ -11,4 +11,10 @@ For instructions, please refer to the README in each folder:
 
 
 change dataset path, temperature [0.5, 0.75, 1, 1.1, 1.2, 2] and method(msp, maxlogit, maxentropy, rba)
-python evalAnomaly.py --ckpt checkpoints/eomt_cityscapes.bin --input "../dataset/anomaly/RoadObsticle21/images/*.*" --method msp --temp 0.5
+python evalAnomaly.py --ckpt checkpoints/eomt_cityscapes.bin --input "../dataset/anomaly/RoadObsticle21/images/*.*" --method maxentropy --temp 0.5
+
+-- RoadAnomaly
+-- RoadAnomaly21
+-- RoadObsticle21
+-- fs_static
+-- FS_LostFound_full
