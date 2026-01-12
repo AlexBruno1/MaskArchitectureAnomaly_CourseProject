@@ -20,7 +20,7 @@ np.random.seed(seed)
 torch.manual_seed(seed)
 
 torch.backends.cudnn.deterministic = True
-torch.backends.cudnn.benchmark = True
+torch.backends.cudnn.benchmark = False
 
 NUM_CLASSES = 19
 MODEL_IMG_SIZE = (1024, 1024)
@@ -95,17 +95,21 @@ def build_model(ckpt_path, device):
     return model
 
 
-def to_per_pixel_logits(mask_logits: torch.Tensor, class_logits: torch.Tensor):
+def to_per_pixel_probs(mask_logits: torch.Tensor, class_logits: torch.Tensor, temp: float):
+    class_logits = class_logits / temp
     class_probs = class_logits.softmax(dim=-1)[..., :-1]
-    return torch.einsum("bqhw,bqc->bchw", mask_logits.sigmoid(), class_probs)
+    return torch.einsum("bqhw,bqc->bchw", mask_logits.sigmoid(), class_probs), class_logits
+
+def to_per_pixel_logits(mask_logits: torch.Tensor, class_logits: torch.Tensor, temp: float):
+    class_logits = class_logits / temp
+    return torch.einsum("bqhw,bqc->bchw", mask_logits.sigmoid(), class_logits[..., :-1])
 
 def load_mask(path: str, target_transform):
-    mask = Image.open(path)
+    mask = Image.open(path).convert("L")
     mask = target_transform(mask)
     ood_gts = np.array(mask)
     if ood_gts.ndim == 3:
-        ood_gts = ood_gts.squeeze(0)
-
+        ood_gts = ood_gts[..., 0]
     if "RoadAnomaly" in path:
         ood_gts = np.where((ood_gts == 2), 1, ood_gts)
     if "LostAndFound" in path:
@@ -157,8 +161,8 @@ def main():
     model = build_model(args.ckpt, device)
     print("[OK] EoMT loaded correctly")
 
-    anomaly_scores = []
-    anomaly_labels = []
+    anomaly_score_list = []
+    ood_gts_list = []
 
     image_paths = sorted(glob.glob(args.input))
 
@@ -185,27 +189,30 @@ def main():
             align_corners=False,
         )
 
-        per_pixel_logits = to_per_pixel_logits(mask_logits, class_logits).squeeze(0)
-        per_pixel_logits = per_pixel_logits/args.temp
+        per_pixel_probs, class_logits_temp = to_per_pixel_probs(
+            mask_logits, class_logits, args.temp
+        )
+        per_pixel_probs = per_pixel_probs.squeeze(0)
 
         if args.method == "msp":
-            probs = probs = F.softmax(per_pixel_logits, dim=0)
-            score = 1.0 - torch.max(probs, dim=0).values
+            score = 1.0 - torch.max(per_pixel_probs, dim=0).values
             score = score.cpu().numpy()
 
         elif args.method == "maxlogit":
+            per_pixel_logits = to_per_pixel_logits(
+                mask_logits, class_logits, args.temp
+            ).squeeze(0)
             score = -torch.max(per_pixel_logits, dim=0).values
             score = score.cpu().numpy()
 
         elif args.method == "maxentropy":
-            probs = F.softmax(per_pixel_logits, dim=0)
-            log_probs = torch.log_softmax(per_pixel_logits, dim=0)
-            score = -(probs * log_probs).sum(dim=0)
+            probs = per_pixel_probs.clamp(min=1e-12)
+            score = -(probs * probs.log()).sum(dim=0)
             score = score.cpu().numpy()
 
         elif args.method == "rba":
             mask_probs = mask_logits.sigmoid()
-            class_probs = class_logits.softmax(dim=-1)[..., :-1]
+            class_probs = (class_logits / args.temp).softmax(dim=-1)[..., :-1]
             max_class_probs = class_probs.max(dim=-1)[0]
             query_scores = mask_probs * max_class_probs[:, :, None, None]
             max_query_score = query_scores.max(dim=1)[0]
@@ -228,25 +235,36 @@ def main():
         if 1 not in np.unique(ood_gts):
             continue
 
-        anomaly_scores.append(score[ood_gts == 1])
-        anomaly_labels.append(np.ones_like(score[ood_gts == 1]))
+        ood_gts_list.append(ood_gts)
+        anomaly_score_list.append(score)
 
-        anomaly_scores.append(score[ood_gts == 0])
-        anomaly_labels.append(np.zeros_like(score[ood_gts == 0]))
-
-
-        del mask_logits, class_logits, per_pixel_logits
-        torch.cuda.empty_cache()
+        if args.method == "maxlogit":
+            del per_pixel_logits
+        del mask_logits, class_logits
+        if device == "cuda":
+            torch.cuda.empty_cache()
 
         if (idx + 1) % 10 == 0:
             print(f"  Processed {idx + 1}/{len(image_paths)} images")
 
-    if not anomaly_scores:
+    if not anomaly_score_list:
         print("No OOD pixels found in provided dataset.")
         return
 
-    scores = np.concatenate(anomaly_scores)
-    labels = np.concatenate(anomaly_labels)
+    ood_gts = np.array(ood_gts_list)
+    anomaly_scores = np.array(anomaly_score_list)
+
+    ood_mask = ood_gts == 1
+    ind_mask = ood_gts == 0
+
+    ood_out = anomaly_scores[ood_mask]
+    ind_out = anomaly_scores[ind_mask]
+
+    ood_label = np.ones(len(ood_out))
+    ind_label = np.zeros(len(ind_out))
+
+    scores = np.concatenate((ind_out, ood_out))
+    labels = np.concatenate((ind_label, ood_label))
 
     auprc = average_precision_score(labels, scores)
     fpr95 = fpr_at_95_tpr(scores, labels)
