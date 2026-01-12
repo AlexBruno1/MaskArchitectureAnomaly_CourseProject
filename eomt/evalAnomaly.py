@@ -189,15 +189,13 @@ def main():
             align_corners=False,
         )
 
-        per_pixel_probs = to_per_pixel_probs(
+        per_pixel_probs, class_logits_temp = to_per_pixel_probs(
             mask_logits, class_logits, args.temp
         )
         per_pixel_probs = per_pixel_probs.squeeze(0)
 
         if args.method == "msp":
-            probs = per_pixel_probs.clamp(min=1e-12)
-            probs = probs / (probs.sum(dim=0, keepdim=True) + 1e-12)
-            score = 1.0 - torch.max(probs, dim=0).values
+            score = 1.0 - torch.max(per_pixel_probs, dim=0).values
             score = score.cpu().numpy()
 
         elif args.method == "maxlogit":
@@ -209,7 +207,6 @@ def main():
 
         elif args.method == "maxentropy":
             probs = per_pixel_probs.clamp(min=1e-12)
-            probs = probs / (probs.sum(dim=0, keepdim=True) + 1e-12)
             score = -(probs * probs.log()).sum(dim=0)
             score = score.cpu().numpy()
 
