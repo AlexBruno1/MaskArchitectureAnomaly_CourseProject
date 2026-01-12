@@ -10,21 +10,21 @@ set method2=maxlogit
 set method3=maxentropy
 set method4=rba
 
-for %%t in (0.5 0.75 1.0 1.1 2.0) do (
-  python evalAnomaly.py --ckpt %ckpt% --input %input1% --method %method1% --temp %%t
-)
+@REM for %%t in (0.5 0.75 1.0 1.1 2.0) do (
+@REM   python evalAnomaly.py --ckpt %ckpt% --input %input1% --method %method1% --temp %%t
+@REM )
 
-for %%t in (0.5 0.75 1.0 1.1 2.0) do (
-  python evalAnomaly.py --ckpt %ckpt% --input %input1% --method %method2% --temp %%t
-)
+@REM for %%t in (0.5 0.75 1.0 1.1 2.0) do (
+@REM   python evalAnomaly.py --ckpt %ckpt% --input %input1% --method %method2% --temp %%t
+@REM )
 
-for %%t in (0.5 0.75 1.0 1.1 2.0) do (
-  python evalAnomaly.py --ckpt %ckpt% --input %input1% --method %method3% --temp %%t
-)
+@REM for %%t in (0.5 0.75 1.0 1.1 2.0) do (
+@REM   python evalAnomaly.py --ckpt %ckpt% --input %input1% --method %method3% --temp %%t
+@REM )
 
-for %%t in (0.5 0.75 1.0 1.1 2.0) do (
-  python evalAnomaly.py --ckpt %ckpt% --input %input1% --method %method4% --temp %%t
-)
+@REM for %%t in (0.5 0.75 1.0 1.1 2.0) do (
+@REM   python evalAnomaly.py --ckpt %ckpt% --input %input1% --method %method4% --temp %%t
+@REM )
 
 
 @REM for %%t in (0.5 0.75 1.0 1.1 2.0) do (
@@ -87,10 +87,10 @@ for %%t in (0.5 0.75 1.0 1.1 2.0) do (
 @REM   python evalAnomaly.py --ckpt %ckpt% --input %input5% --method %method2% --temp %%t
 @REM )
 
-@REM for %%t in (0.5 0.75 1.0 1.1 2.0) do (
-@REM   python evalAnomaly.py --ckpt %ckpt% --input %input5% --method %method3% --temp %%t
-@REM )
+for %%t in (0.5 0.75 1.0 1.1 2.0) do (
+  python evalAnomaly.py --ckpt %ckpt% --input %input5% --method %method3% --temp %%t
+)
 
-@REM for %%t in (0.5 0.75 1.0 1.1 2.0) do (
-@REM   python evalAnomaly.py --ckpt %ckpt% --input %input5% --method %method4% --temp %%t
-@REM )
+for %%t in (0.5 0.75 1.0 1.1 2.0) do (
+  python evalAnomaly.py --ckpt %ckpt% --input %input5% --method %method4% --temp %%t
+)

@@ -358,3 +358,43 @@ DATASET  ../dataset/anomaly/FS_LostFound_full/images/*.*
 METHOD  maxlogit
 TEMP    2.0
     AUPRC score:26.401901974513255   FPR@TPR95:16.42788454259383
+DATASET  ../dataset/anomaly/FS_LostFound_full/images/*.*
+METHOD  maxentropy
+TEMP    0.5
+    AUPRC score:0.7210862544791391   FPR@TPR95:45.75028308250501
+DATASET  ../dataset/anomaly/FS_LostFound_full/images/*.*
+METHOD  maxentropy
+TEMP    0.75
+    AUPRC score:0.702242016077722   FPR@TPR95:47.26163936520882
+DATASET  ../dataset/anomaly/FS_LostFound_full/images/*.*
+METHOD  maxentropy
+TEMP    1.0
+    AUPRC score:0.61420908370843   FPR@TPR95:79.05286397677081
+DATASET  ../dataset/anomaly/FS_LostFound_full/images/*.*
+METHOD  maxentropy
+TEMP    1.1
+    AUPRC score:0.5449431664264143   FPR@TPR95:99.91440580164317
+DATASET  ../dataset/anomaly/FS_LostFound_full/images/*.*
+METHOD  maxentropy
+TEMP    2.0
+    AUPRC score:0.25018701082648304   FPR@TPR95:99.94518907583856
+DATASET  ../dataset/anomaly/FS_LostFound_full/images/*.*
+METHOD  rba
+TEMP    0.5
+    AUPRC score:21.64702504860069   FPR@TPR95:19.480803143853052
+DATASET  ../dataset/anomaly/FS_LostFound_full/images/*.*
+METHOD  rba
+TEMP    0.75
+    AUPRC score:23.90247935901088   FPR@TPR95:15.827946636387283
+DATASET  ../dataset/anomaly/FS_LostFound_full/images/*.*
+METHOD  rba
+TEMP    1.0
+    AUPRC score:25.35587843141244   FPR@TPR95:14.688730843355193
+DATASET  ../dataset/anomaly/FS_LostFound_full/images/*.*
+METHOD  rba
+TEMP    1.1
+    AUPRC score:25.715784673869624   FPR@TPR95:15.030457249123824
+DATASET  ../dataset/anomaly/FS_LostFound_full/images/*.*
+METHOD  rba
+TEMP    2.0
+    AUPRC score:27.095559876055393   FPR@TPR95:13.831806297013344
