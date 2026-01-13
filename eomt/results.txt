@@ -1,400 +1,249 @@
+================================================================================
+METHOD: MSP
+================================================================================
+
+
+DATASET: /FS_LostFound_full
+--------------------------------------------------------------------------------
+Temperature     AUPRC                FPR@95TPR
+--------------------------------------------------------------------------------
+0.50            25.35%               14.89%
+0.75            25.36%               14.89%
+1.00            25.37%               14.89%
+1.10            25.37%               14.89%
+1.20            25.38%               14.88%
+2.00            25.39%               14.88%
+
+DATASET: /RoadAnomaly
+--------------------------------------------------------------------------------
+Temperature     AUPRC                FPR@95TPR
+--------------------------------------------------------------------------------
+0.50            75.51%               19.38%
+0.75            75.61%               19.34%
+1.00            75.69%               19.32%
+1.10            75.71%               19.31%
+1.20            75.73%               19.31%
+2.00            75.87%               19.29%
+
+DATASET: /RoadAnomaly21
+--------------------------------------------------------------------------------
+Temperature     AUPRC                FPR@95TPR
+--------------------------------------------------------------------------------
+0.50            74.16%               33.46%
+0.75            74.24%               33.46%
+1.00            74.31%               33.46%
+1.10            74.33%               33.46%
+1.20            74.35%               33.46%
+2.00            74.45%               33.46%
+
+DATASET: /RoadObsticle21
+--------------------------------------------------------------------------------
+Temperature     AUPRC                FPR@95TPR
+--------------------------------------------------------------------------------
+0.50            90.19%               0.54%
+0.75            90.19%               0.54%
+1.00            90.20%               0.55%
+1.10            90.20%               0.55%
+1.20            90.20%               0.55%
+2.00            90.20%               0.55%
+
+DATASET: /fs_static
+--------------------------------------------------------------------------------
+Temperature     AUPRC                FPR@95TPR
+--------------------------------------------------------------------------------
+0.50            54.37%               35.18%
+0.75            54.39%               35.18%
+1.00            54.39%               35.18%
+1.10            54.40%               35.18%
+1.20            54.40%               35.18%
+2.00            54.40%               35.18%
+
+================================================================================
+METHOD: MAXLOGIT
+================================================================================
+
+
+DATASET: /FS_LostFound_full
+--------------------------------------------------------------------------------
+Temperature     AUPRC                FPR@95TPR
+--------------------------------------------------------------------------------
+0.50            25.40%               14.63%
+0.75            25.40%               14.63%
+1.00            25.40%               14.63%
+1.10            25.40%               14.63%
+1.20            25.40%               14.63%
+2.00            25.40%               14.63%
+
+DATASET: /RoadAnomaly
+--------------------------------------------------------------------------------
+Temperature     AUPRC                FPR@95TPR
+--------------------------------------------------------------------------------
+0.50            75.02%               19.07%
+0.75            75.02%               19.07%
+1.00            75.02%               19.07%
+1.10            75.02%               19.07%
+1.20            75.02%               19.07%
+2.00            75.02%               19.07%
+
+DATASET: /RoadAnomaly21
+--------------------------------------------------------------------------------
+Temperature     AUPRC                FPR@95TPR
+--------------------------------------------------------------------------------
+0.50            73.73%               33.58%
+0.75            73.73%               33.58%
+1.00            73.73%               33.58%
+1.10            73.73%               33.58%
+1.20            73.73%               33.58%
+2.00            73.73%               33.58%
+
+DATASET: /RoadObsticle21
+--------------------------------------------------------------------------------
+Temperature     AUPRC                FPR@95TPR
+--------------------------------------------------------------------------------
+0.50            90.15%               0.58%
+0.75            90.15%               0.58%
+1.00            90.15%               0.58%
+1.10            90.15%               0.58%
+1.20            90.15%               0.58%
+2.00            90.15%               0.58%
+
+DATASET: /fs_static
+--------------------------------------------------------------------------------
+Temperature     AUPRC                FPR@95TPR
+--------------------------------------------------------------------------------
+0.50            54.53%               34.81%
+0.75            54.53%               34.81%
+1.00            54.53%               34.81%
+1.10            54.53%               34.81%
+1.20            54.53%               34.81%
+2.00            54.53%               34.81%
+
+================================================================================
+METHOD: MAXENTROPY
+================================================================================
+
+
+DATASET: FS_LostFound_full
+--------------------------------------------------------------------------------
+Temperature     AUPRC                FPR@95TPR
+--------------------------------------------------------------------------------
+0.50            28.10%               14.82%
+0.75            28.07%               14.74%
+1.00            27.91%               14.70%
+1.10            27.86%               14.69%
+1.20            27.81%               14.68%
+2.00            27.36%               14.63%
+
+DATASET: RoadAnomaly
+--------------------------------------------------------------------------------
+Temperature     AUPRC                FPR@95TPR
+--------------------------------------------------------------------------------
+0.50            77.74%               19.04%
+0.75            77.75%               18.90%
+1.00            77.67%               18.81%
+1.10            77.64%               18.78%
+1.20            77.61%               18.76%
+2.00            77.26%               18.65%
+
+DATASET: RoadAnomaly/images/*.jpg
+--------------------------------------------------------------------------------
+Temperature     AUPRC                FPR@95TPR
+--------------------------------------------------------------------------------
+0.50            77.74%               19.04%
+
+DATASET: RoadAnomaly21
+--------------------------------------------------------------------------------
+Temperature     AUPRC                FPR@95TPR
+--------------------------------------------------------------------------------
+0.50            76.54%               33.42%
+0.75            76.67%               33.37%
+1.00            76.83%               33.33%
+1.10            76.90%               33.32%
+1.20            76.93%               33.31%
+2.00            77.08%               33.26%
+
+DATASET: RoadObsticle21
+--------------------------------------------------------------------------------
+Temperature     AUPRC                FPR@95TPR
+--------------------------------------------------------------------------------
+0.50            90.17%               0.59%
+0.75            90.13%               0.63%
+1.00            90.11%               0.67%
+1.10            90.10%               0.68%
+1.20            90.08%               0.68%
+2.00            90.05%               0.71%
+
+DATASET: fs_static
+--------------------------------------------------------------------------------
+Temperature     AUPRC                FPR@95TPR
+--------------------------------------------------------------------------------
+0.50            53.42%               35.15%
+0.75            53.08%               35.12%
+1.00            52.80%               35.09%
+1.10            52.71%               35.08%
+1.20            52.63%               35.08%
+2.00            51.93%               35.02%
+
+================================================================================
+METHOD: RBA
+================================================================================
+
+
+DATASET: /FS_LostFound_full
+--------------------------------------------------------------------------------
+Temperature     AUPRC                FPR@95TPR
+--------------------------------------------------------------------------------
+0.50            25.36%               14.69%
+0.75            25.36%               14.69%
+1.00            25.36%               14.69%
+1.10            25.36%               14.69%
+1.20            25.36%               14.69%
+2.00            25.36%               14.69%
+
+DATASET: /RoadAnomaly
+--------------------------------------------------------------------------------
+Temperature     AUPRC                FPR@95TPR
+--------------------------------------------------------------------------------
+0.50            75.17%               19.13%
+0.75            75.17%               19.13%
+1.00            75.17%               19.13%
+1.10            75.17%               19.13%
+1.20            75.17%               19.13%
+2.00            75.17%               19.13%
+
+DATASET: /RoadAnomaly21
+--------------------------------------------------------------------------------
+Temperature     AUPRC                FPR@95TPR
+--------------------------------------------------------------------------------
+0.50            73.90%               33.64%
+0.75            73.90%               33.64%
+1.00            73.90%               33.64%
+1.10            73.90%               33.64%
+1.20            73.90%               33.64%
+2.00            73.90%               33.64%
+
+DATASET: /RoadObsticle21
+--------------------------------------------------------------------------------
+Temperature     AUPRC                FPR@95TPR
+--------------------------------------------------------------------------------
+0.50            91.22%               0.52%
+0.75            91.22%               0.52%
+1.00            91.22%               0.52%
+1.10            91.22%               0.52%
+1.20            91.22%               0.52%
+2.00            91.22%               0.52%
+
+DATASET: /fs_static
+--------------------------------------------------------------------------------
+Temperature     AUPRC                FPR@95TPR
+--------------------------------------------------------------------------------
+0.50            54.40%               34.88%
+0.75            54.40%               34.88%
+1.00            54.40%               34.88%
+1.10            54.40%               34.88%
+1.20            54.40%               34.88%
+2.00            54.40%               34.88%
 DATASET  ../dataset/anomaly/RoadAnomaly21/images/*.*
-METHOD  msp
-TEMP    0.5
-    AUPRC score:73.63722986219   FPR@TPR95:53.67592054583854
-DATASET  ../dataset/anomaly/RoadAnomaly21/images/*.*
-METHOD  msp
-TEMP    0.75
-    AUPRC score:72.89887294301668   FPR@TPR95:51.27446196626313
-DATASET  ../dataset/anomaly/RoadAnomaly21/images/*.*
-METHOD  msp
-TEMP    1.0
-    AUPRC score:73.87465003673172   FPR@TPR95:33.57550793142058
-DATASET  ../dataset/anomaly/RoadAnomaly21/images/*.*
-METHOD  msp
-TEMP    1.1
-    AUPRC score:74.28904926802264   FPR@TPR95:29.999431708134576
-DATASET  ../dataset/anomaly/RoadAnomaly21/images/*.*
-METHOD  msp
-TEMP    2.0
-    AUPRC score:79.14605751171906   FPR@TPR95:11.586818248458977
-DATASET  ../dataset/anomaly/RoadAnomaly21/images/*.*
-METHOD  maxlogit
-TEMP    0.5
-    AUPRC score:72.84759885435422   FPR@TPR95:20.933088851853267
-DATASET  ../dataset/anomaly/RoadAnomaly21/images/*.*
-METHOD  maxlogit
-TEMP    0.75
-    AUPRC score:72.84761686199688   FPR@TPR95:20.933088851853267
-DATASET  ../dataset/anomaly/RoadAnomaly21/images/*.*
-METHOD  maxlogit
-TEMP    1.0
-    AUPRC score:72.84759885435422   FPR@TPR95:20.933088851853267
-DATASET  ../dataset/anomaly/RoadAnomaly21/images/*.*
-METHOD  maxlogit
-TEMP    1.1
-    AUPRC score:72.8476045980414   FPR@TPR95:20.933088851853267
-DATASET  ../dataset/anomaly/RoadAnomaly21/images/*.*
-METHOD  maxlogit
-TEMP    2.0
-    AUPRC score:72.84759885435422   FPR@TPR95:20.933088851853267
-DATASET  ../dataset/anomaly/RoadAnomaly21/images/*.*
-METHOD  maxentropy
-TEMP    0.5
-    AUPRC score:19.809355663663435   FPR@TPR95:92.38100374260786
-DATASET  ../dataset/anomaly/RoadAnomaly21/images/*.*
-METHOD  maxentropy
-TEMP    0.75
-    AUPRC score:21.326110831500014   FPR@TPR95:99.58470622210007
-DATASET  ../dataset/anomaly/RoadAnomaly21/images/*.*
-METHOD  maxentropy
-TEMP    1.0
-    AUPRC score:22.885276769638008   FPR@TPR95:99.74125323433456
-DATASET  ../dataset/anomaly/RoadAnomaly21/images/*.*
-METHOD  maxentropy
-TEMP    1.1
-    AUPRC score:23.50736374244053   FPR@TPR95:99.74069654026232
-DATASET  ../dataset/anomaly/RoadAnomaly21/images/*.*
-METHOD  maxentropy
-TEMP    2.0
-    AUPRC score:21.182137523265972   FPR@TPR95:99.73576747816425
-DATASET  ../dataset/anomaly/RoadAnomaly21/images/*.*
-METHOD  rba
-TEMP    0.5
-    AUPRC score:73.63722271993365   FPR@TPR95:53.683199578561954
-DATASET  ../dataset/anomaly/RoadAnomaly21/images/*.*
-METHOD  rba
-TEMP    0.75
-    AUPRC score:72.91122764700532   FPR@TPR95:51.27968890079596
-DATASET  ../dataset/anomaly/RoadAnomaly21/images/*.*
-METHOD  rba
-TEMP    1.0
-    AUPRC score:73.89709651846091   FPR@TPR95:33.63786049660036
-DATASET  ../dataset/anomaly/RoadAnomaly21/images/*.*
-METHOD  rba
-TEMP    1.1
-    AUPRC score:74.30931246413203   FPR@TPR95:30.091134140813868
-DATASET  ../dataset/anomaly/RoadAnomaly21/images/*.*
-METHOD  rba
-TEMP    2.0
-    AUPRC score:79.11621566402218   FPR@TPR95:11.861887356109916
-DATASET  ../dataset/anomaly/RoadAnomaly/images/*.*
-METHOD  msp
-TEMP    0.5
-    AUPRC score:74.74130760796974   FPR@TPR95:20.64043111136954
-DATASET  ../dataset/anomaly/RoadAnomaly/images/*.*
-METHOD  msp
-TEMP    0.75
-    AUPRC score:75.16183976079702   FPR@TPR95:20.082462230750657
-DATASET  ../dataset/anomaly/RoadAnomaly/images/*.*
-METHOD  msp
-TEMP    1.0
-    AUPRC score:75.16553419098263   FPR@TPR95:19.07096509772582
-DATASET  ../dataset/anomaly/RoadAnomaly/images/*.*
-METHOD  msp
-TEMP    1.1
-    AUPRC score:75.13153787258182   FPR@TPR95:17.98561147273864
-DATASET  ../dataset/anomaly/RoadAnomaly/images/*.*
-METHOD  msp
-TEMP    2.0
-    AUPRC score:74.60470933614037   FPR@TPR95:19.07425347375821
-DATASET  ../dataset/anomaly/RoadAnomaly/images/*.*
-METHOD  maxlogit
-TEMP    0.5
-    AUPRC score:70.9057562124485   FPR@TPR95:44.88267544714139
-DATASET  ../dataset/anomaly/RoadAnomaly/images/*.*
-METHOD  maxlogit
-TEMP    0.75
-    AUPRC score:70.90575609618244   FPR@TPR95:44.88268867046466
-DATASET  ../dataset/anomaly/RoadAnomaly/images/*.*
-METHOD  maxlogit
-TEMP    1.0
-    AUPRC score:70.9057562124485   FPR@TPR95:44.88267544714139
-DATASET  ../dataset/anomaly/RoadAnomaly/images/*.*
-METHOD  maxlogit
-TEMP    1.1
-    AUPRC score:70.90575605084257   FPR@TPR95:44.88268778890978
-DATASET  ../dataset/anomaly/RoadAnomaly/images/*.*
-METHOD  maxlogit
-TEMP    2.0
-    AUPRC score:70.9057562124485   FPR@TPR95:44.88267544714139
-DATASET  ../dataset/anomaly/RoadAnomaly/images/*.*
-METHOD  maxentropy
-TEMP    0.5
-    AUPRC score:11.548839024205982   FPR@TPR95:97.96091594680951
-DATASET  ../dataset/anomaly/RoadAnomaly/images/*.*
-METHOD  maxentropy
-TEMP    0.75
-    AUPRC score:11.001710333984882   FPR@TPR95:99.76102281241891
-DATASET  ../dataset/anomaly/RoadAnomaly/images/*.*
-METHOD  maxentropy
-TEMP    1.0
-    AUPRC score:9.600760018647591   FPR@TPR95:99.76237335450287
-DATASET  ../dataset/anomaly/RoadAnomaly/images/*.*
-METHOD  maxentropy
-TEMP    1.1
-    AUPRC score:8.983391267826224   FPR@TPR95:99.75676313921412
-DATASET  ../dataset/anomaly/RoadAnomaly/images/*.*
-METHOD  maxentropy
-TEMP    2.0
-    AUPRC score:6.045410084501049   FPR@TPR95:99.738328063457
-DATASET  ../dataset/anomaly/RoadAnomaly/images/*.*
-METHOD  rba
-TEMP    0.5
-    AUPRC score:74.74770615897953   FPR@TPR95:20.641405582139527
-DATASET  ../dataset/anomaly/RoadAnomaly/images/*.*
-METHOD  rba
-TEMP    0.75
-    AUPRC score:75.17625801079922   FPR@TPR95:20.094285115936632
-DATASET  ../dataset/anomaly/RoadAnomaly/images/*.*
-METHOD  rba
-TEMP    1.0
-    AUPRC score:75.17239630368626   FPR@TPR95:19.12861658332388
-DATASET  ../dataset/anomaly/RoadAnomaly/images/*.*
-METHOD  rba
-TEMP    1.1
-    AUPRC score:75.13425700112133   FPR@TPR95:18.07419363381261
-DATASET  ../dataset/anomaly/RoadAnomaly/images/*.*
-METHOD  rba
-TEMP    2.0
-    AUPRC score:74.58609783336276   FPR@TPR95:19.49864457410197
-DATASET  ../dataset/anomaly/RoadObsticle21/images/*.*
-METHOD  msp
-TEMP    0.5
-    AUPRC score:88.15263181158646   FPR@TPR95:0.6105692339348563
-DATASET  ../dataset/anomaly/RoadObsticle21/images/*.*
-METHOD  msp
-TEMP    0.75
-    AUPRC score:89.82695944214008   FPR@TPR95:0.5369883442240088
-DATASET  ../dataset/anomaly/RoadObsticle21/images/*.*
-METHOD  msp
-TEMP    1.0
-    AUPRC score:90.15051265321425   FPR@TPR95:0.5756573840270369
-DATASET  ../dataset/anomaly/RoadObsticle21/images/*.*
-METHOD  msp
-TEMP    1.1
-    AUPRC score:90.03782377883533   FPR@TPR95:0.606905197508124
-DATASET  ../dataset/anomaly/RoadObsticle21/images/*.*
-METHOD  msp
-TEMP    2.0
-    AUPRC score:72.78424184992912   FPR@TPR95:99.9996273861261
-DATASET  ../dataset/anomaly/RoadObsticle21/images/*.*
-METHOD  maxlogit
-TEMP    0.5
-    AUPRC score:48.772650044931495   FPR@TPR95:99.99957563419916
-DATASET  ../dataset/anomaly/RoadObsticle21/images/*.*
-METHOD  maxlogit
-TEMP    0.75
-    AUPRC score:48.772649289635346   FPR@TPR95:99.99957563419916
-DATASET  ../dataset/anomaly/RoadObsticle21/images/*.*
-METHOD  maxlogit
-TEMP    1.0
-    AUPRC score:48.772650044931495   FPR@TPR95:99.99957563419916
-DATASET  ../dataset/anomaly/RoadObsticle21/images/*.*
-METHOD  maxlogit
-TEMP    1.1
-    AUPRC score:48.772648827805284   FPR@TPR95:99.99957563419916
-DATASET  ../dataset/anomaly/RoadObsticle21/images/*.*
-METHOD  maxlogit
-TEMP    2.0
-    AUPRC score:48.772650044931495   FPR@TPR95:99.99957563419916
-DATASET  ../dataset/anomaly/RoadObsticle21/images/*.*
-METHOD  maxentropy
-TEMP    0.5
-    AUPRC score:39.093017791540206   FPR@TPR95:3.763203469117969
-DATASET  ../dataset/anomaly/RoadObsticle21/images/*.*
-METHOD  maxentropy
-TEMP    0.75
-    AUPRC score:44.35662881575354   FPR@TPR95:8.486798497455254
-DATASET  ../dataset/anomaly/RoadObsticle21/images/*.*
-METHOD  maxentropy
-TEMP    1.0
-    AUPRC score:52.76949072418099   FPR@TPR95:96.98244864449282
-DATASET  ../dataset/anomaly/RoadObsticle21/images/*.*
-METHOD  maxentropy
-TEMP    1.1
-    AUPRC score:57.04055528014984   FPR@TPR95:100.0
-DATASET  ../dataset/anomaly/RoadObsticle21/images/*.*
-METHOD  maxentropy
-TEMP    2.0
-    AUPRC score:62.14775808984432   FPR@TPR95:100.0
-DATASET  ../dataset/anomaly/RoadObsticle21/images/*.*
-METHOD  rba
-TEMP    0.5
-    AUPRC score:88.18464362883039   FPR@TPR95:0.6094099907715964
-DATASET  ../dataset/anomaly/RoadObsticle21/images/*.*
-METHOD  rba
-TEMP    0.75
-    AUPRC score:90.13103439667846   FPR@TPR95:0.534545653272854
-DATASET  ../dataset/anomaly/RoadObsticle21/images/*.*
-METHOD  rba
-TEMP    1.0
-    AUPRC score:91.21702189193876   FPR@TPR95:0.5202621214398298
-DATASET  ../dataset/anomaly/RoadObsticle21/images/*.*
-METHOD  rba
-TEMP    1.1
-    AUPRC score:91.57507797891266   FPR@TPR95:0.5047986456727729
-DATASET  ../dataset/anomaly/RoadObsticle21/images/*.*
-METHOD  rba
-TEMP    2.0
-    AUPRC score:92.87930725298149   FPR@TPR95:0.23404291435387306
-DATASET  ../dataset/anomaly/fs_static/images/*.*
-METHOD  msp
-TEMP    0.5
-    AUPRC score:24.342561074258644   FPR@TPR95:33.28955431217368
-DATASET  ../dataset/anomaly/fs_static/images/*.*
-METHOD  msp
-TEMP    0.75
-    AUPRC score:26.686160855209796   FPR@TPR95:33.49741854937246
-DATASET  ../dataset/anomaly/fs_static/images/*.*
-METHOD  msp
-TEMP    1.0
-    AUPRC score:30.16278334625433   FPR@TPR95:34.103776273391745
-DATASET  ../dataset/anomaly/fs_static/images/*.*
-METHOD  msp
-TEMP    1.1
-    AUPRC score:31.50564767861084   FPR@TPR95:34.821350029825574
-DATASET  ../dataset/anomaly/fs_static/images/*.*
-METHOD  msp
-TEMP    2.0
-    AUPRC score:37.11630576250374   FPR@TPR95:71.54139474949463
-DATASET  ../dataset/anomaly/fs_static/images/*.*
-METHOD  maxlogit
-TEMP    0.5
-    AUPRC score:39.47297355154918   FPR@TPR95:81.71012905447064
-DATASET  ../dataset/anomaly/fs_static/images/*.*
-METHOD  maxlogit
-TEMP    0.75
-    AUPRC score:39.47297369230699   FPR@TPR95:81.71010605078642
-DATASET  ../dataset/anomaly/fs_static/images/*.*
 METHOD  maxlogit
 TEMP    1.0
-    AUPRC score:39.47297355154918   FPR@TPR95:81.71012905447064
-DATASET  ../dataset/anomaly/fs_static/images/*.*
-METHOD  maxlogit
-TEMP    1.1
-    AUPRC score:39.47297382382198   FPR@TPR95:81.71013418752413
-DATASET  ../dataset/anomaly/fs_static/images/*.*
-METHOD  maxlogit
-TEMP    2.0
-    AUPRC score:39.47297355154918   FPR@TPR95:81.71012905447064
-DATASET  ../dataset/anomaly/fs_static/images/*.*
-METHOD  maxentropy
-TEMP    0.5
-    AUPRC score:3.2352334774374123   FPR@TPR95:50.78224123184158
-DATASET  ../dataset/anomaly/fs_static/images/*.*
-METHOD  maxentropy
-TEMP    0.75
-    AUPRC score:3.178911169983257   FPR@TPR95:51.34946265484949
-DATASET  ../dataset/anomaly/fs_static/images/*.*
-METHOD  maxentropy
-TEMP    1.0
-    AUPRC score:3.004766566758354   FPR@TPR95:74.18039489150911
-DATASET  ../dataset/anomaly/fs_static/images/*.*
-METHOD  maxentropy
-TEMP    1.1
-    AUPRC score:2.8823140075731017   FPR@TPR95:99.29525456808491
-DATASET  ../dataset/anomaly/fs_static/images/*.*
-METHOD  maxentropy
-TEMP    2.0
-    AUPRC score:1.2784811448076698   FPR@TPR95:99.99588595267667
-DATASET  ../dataset/anomaly/fs_static/images/*.*
-METHOD  rba
-TEMP    0.5
-    AUPRC score:24.299825590957465   FPR@TPR95:33.29063139789966
-DATASET  ../dataset/anomaly/fs_static/images/*.*
-METHOD  rba
-TEMP    0.75
-    AUPRC score:26.596109807265368   FPR@TPR95:33.526237412849774
-DATASET  ../dataset/anomaly/fs_static/images/*.*
-METHOD  rba
-TEMP    1.0
-    AUPRC score:29.8990404841741   FPR@TPR95:34.127687050529076
-DATASET  ../dataset/anomaly/fs_static/images/*.*
-METHOD  rba
-TEMP    1.1
-    AUPRC score:31.186340013552062   FPR@TPR95:34.74524341795203
-DATASET  ../dataset/anomaly/fs_static/images/*.*
-METHOD  rba
-TEMP    2.0
-    AUPRC score:36.61228770698741   FPR@TPR95:67.17465594758355
-DATASET  ../dataset/anomaly/FS_LostFound_full/images/*.*
-METHOD  msp
-TEMP    0.5
-    AUPRC score:21.628614819887964   FPR@TPR95:19.51176132125367
-DATASET  ../dataset/anomaly/FS_LostFound_full/images/*.*
-METHOD  msp
-TEMP    0.75
-    AUPRC score:23.89293276523571   FPR@TPR95:15.822894384402508
-DATASET  ../dataset/anomaly/FS_LostFound_full/images/*.*
-METHOD  msp
-TEMP    1.0
-    AUPRC score:25.334698677074375   FPR@TPR95:14.649957899424281
-DATASET  ../dataset/anomaly/FS_LostFound_full/images/*.*
-METHOD  msp
-TEMP    1.1
-    AUPRC score:25.69228292344515   FPR@TPR95:14.976863048767166
-DATASET  ../dataset/anomaly/FS_LostFound_full/images/*.*
-METHOD  msp
-TEMP    2.0
-    AUPRC score:27.036929967024427   FPR@TPR95:13.656573690746848
-DATASET  ../dataset/anomaly/FS_LostFound_full/images/*.*
-METHOD  maxlogit
-TEMP    0.5
-    AUPRC score:26.344582775420477   FPR@TPR95:16.313226543763886
-DATASET  ../dataset/anomaly/FS_LostFound_full/images/*.*
-METHOD  maxlogit
-TEMP    0.75
-    AUPRC score:26.344582647296406   FPR@TPR95:16.313228189304763
-DATASET  ../dataset/anomaly/FS_LostFound_full/images/*.*
-METHOD  maxlogit
-TEMP    1.0
-    AUPRC score:26.344582775420477   FPR@TPR95:16.313226543763886
-DATASET  ../dataset/anomaly/FS_LostFound_full/images/*.*
-METHOD  maxlogit
-TEMP    1.1
-    AUPRC score:26.40190202420411   FPR@TPR95:16.427877417660557
-DATASET  ../dataset/anomaly/FS_LostFound_full/images/*.*
-METHOD  maxlogit
-TEMP    2.0
-    AUPRC score:26.401901974513255   FPR@TPR95:16.42788454259383
-DATASET  ../dataset/anomaly/FS_LostFound_full/images/*.*
-METHOD  maxentropy
-TEMP    0.5
-    AUPRC score:0.7210862544791391   FPR@TPR95:45.75028308250501
-DATASET  ../dataset/anomaly/FS_LostFound_full/images/*.*
-METHOD  maxentropy
-TEMP    0.75
-    AUPRC score:0.702242016077722   FPR@TPR95:47.26163936520882
-DATASET  ../dataset/anomaly/FS_LostFound_full/images/*.*
-METHOD  maxentropy
-TEMP    1.0
-    AUPRC score:0.61420908370843   FPR@TPR95:79.05286397677081
-DATASET  ../dataset/anomaly/FS_LostFound_full/images/*.*
-METHOD  maxentropy
-TEMP    1.1
-    AUPRC score:0.5449431664264143   FPR@TPR95:99.91440580164317
-DATASET  ../dataset/anomaly/FS_LostFound_full/images/*.*
-METHOD  maxentropy
-TEMP    2.0
-    AUPRC score:0.25018701082648304   FPR@TPR95:99.94518907583856
-DATASET  ../dataset/anomaly/FS_LostFound_full/images/*.*
-METHOD  rba
-TEMP    0.5
-    AUPRC score:21.64702504860069   FPR@TPR95:19.480803143853052
-DATASET  ../dataset/anomaly/FS_LostFound_full/images/*.*
-METHOD  rba
-TEMP    0.75
-    AUPRC score:23.90247935901088   FPR@TPR95:15.827946636387283
-DATASET  ../dataset/anomaly/FS_LostFound_full/images/*.*
-METHOD  rba
-TEMP    1.0
-    AUPRC score:25.35587843141244   FPR@TPR95:14.688730843355193
-DATASET  ../dataset/anomaly/FS_LostFound_full/images/*.*
-METHOD  rba
-TEMP    1.1
-    AUPRC score:25.715784673869624   FPR@TPR95:15.030457249123824
-DATASET  ../dataset/anomaly/FS_LostFound_full/images/*.*
-METHOD  rba
-TEMP    2.0
-    AUPRC score:27.095559876055393   FPR@TPR95:13.831806297013344
+    AUPRC score:72.8475986781378   FPR@TPR95:20.933088851853267
