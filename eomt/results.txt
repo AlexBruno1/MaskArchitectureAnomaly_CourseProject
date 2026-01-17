@@ -243,7 +243,3 @@ Temperature     AUPRC                FPR@95TPR
 1.10            54.40%               34.88%
 1.20            54.40%               34.88%
 2.00            54.40%               34.88%
-DATASET  ../dataset/anomaly/RoadAnomaly21/images/*.*
-METHOD  maxlogit
-TEMP    1.0
-    AUPRC score:72.8475986781378   FPR@TPR95:20.933088851853267

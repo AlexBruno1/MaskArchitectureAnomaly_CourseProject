@@ -12,7 +12,7 @@ from torchvision.transforms import InterpolationMode
 
 from models.eomt import EoMT
 from models.vit import ViT
-from training.mask_classification_semantic import MaskClassificationSemantic
+from training.lightning_module import LightningModule
 
 seed = 42
 random.seed(seed)
@@ -78,31 +78,30 @@ def build_model(ckpt_path, device):
         masked_attn_enabled=True,
     )
 
-    model = MaskClassificationSemantic(
+    lightningModule = LightningModule(
         network=network,
         img_size=MODEL_IMG_SIZE,
         num_classes=NUM_CLASSES,
         attn_mask_annealing_enabled=False,
         attn_mask_annealing_start_steps=None,
         attn_mask_annealing_end_steps=None,
+        lr=1e-4,
+        llrd=0.8,
+        llrd_l2_enabled=True,
+        lr_mult=1.0,
+        weight_decay=0.05,
+        poly_power=0.9,
+        warmup_steps=(500, 1000),
         ckpt_path=ckpt_path,
         delta_weights=False,
         load_ckpt_class_head=True,
     )
 
-    model.eval()
+    model = lightningModule.network
     model.to(device)
+    model.eval()
     return model
 
-
-def to_per_pixel_probs(mask_logits: torch.Tensor, class_logits: torch.Tensor, temp: float):
-    class_logits = class_logits / temp
-    class_probs = class_logits.softmax(dim=-1)[..., :-1]
-    return torch.einsum("bqhw,bqc->bchw", mask_logits.sigmoid(), class_probs), class_logits
-
-def to_per_pixel_logits(mask_logits: torch.Tensor, class_logits: torch.Tensor, temp: float):
-    class_logits = class_logits / temp
-    return torch.einsum("bqhw,bqc->bchw", mask_logits.sigmoid(), class_logits[..., :-1])
 
 def load_mask(path: str, target_transform):
     mask = Image.open(path).convert("L")
@@ -177,7 +176,7 @@ def main():
         img = img.unsqueeze(0).to(device)
 
         with torch.no_grad():
-            mask_logits_list, class_logits_list = model.network(img)
+            mask_logits_list, class_logits_list = model(img)
 
         mask_logits = mask_logits_list[-1]
         class_logits = class_logits_list[-1]
@@ -189,20 +188,20 @@ def main():
             align_corners=False,
         )
 
-        per_pixel_probs, class_logits_temp = to_per_pixel_probs(
-            mask_logits, class_logits, args.temp
-        )
-        per_pixel_probs = per_pixel_probs.squeeze(0)
+        per_pixel_logits = LightningModule.to_per_pixel_logits_semantic(
+                mask_logits, class_logits
+            )
+
+        per_pixel_logits = per_pixel_logits[0]
+        logits = per_pixel_logits / args.temp
+        per_pixel_probs = F.softmax(logits, dim=0)
 
         if args.method == "msp":
             score = 1.0 - torch.max(per_pixel_probs, dim=0).values
             score = score.cpu().numpy()
 
         elif args.method == "maxlogit":
-            per_pixel_logits = to_per_pixel_logits(
-                mask_logits, class_logits, args.temp
-            ).squeeze(0)
-            score = -torch.max(per_pixel_logits, dim=0).values
+            score = -torch.max(logits, dim=0).values
             score = score.cpu().numpy()
 
         elif args.method == "maxentropy":
