@@ -1,0 +1,244 @@
+DATASET  dataset/anomaly/Validation_Dataset/RoadAnomaly/images/*.jpg
+METHOD  maxentropy
+TEMP    0.5
+    AUPRC score:77.74417623580027   FPR@TPR95:19.043769261753848
+DATASET  dataset/anomaly/Validation_Dataset/RoadAnomaly/images/*.*
+METHOD  maxentropy
+TEMP    0.5
+    AUPRC score:77.74417623580027   FPR@TPR95:19.043769261753848
+DATASET  dataset/anomaly/Validation_Dataset/RoadAnomaly/images/*.*
+METHOD  maxentropy
+TEMP    0.75
+    AUPRC score:77.74507267065044   FPR@TPR95:18.89851159331066
+DATASET  dataset/anomaly/Validation_Dataset/RoadAnomaly/images/*.*
+METHOD  maxentropy
+TEMP    1.0
+    AUPRC score:77.66782115303687   FPR@TPR95:18.809213562653728
+DATASET  dataset/anomaly/Validation_Dataset/RoadAnomaly/images/*.*
+METHOD  maxentropy
+TEMP    1.1
+    AUPRC score:77.64321086014562   FPR@TPR95:18.78250733149038
+DATASET  dataset/anomaly/Validation_Dataset/RoadAnomaly/images/*.*
+METHOD  maxentropy
+TEMP    1.2
+    AUPRC score:77.609322286381   FPR@TPR95:18.759251532190614
+DATASET  dataset/anomaly/Validation_Dataset/RoadAnomaly/images/*.*
+METHOD  maxentropy
+TEMP    2.0
+    AUPRC score:77.25701104450282   FPR@TPR95:18.64845365593392
+DATASET  dataset/anomaly/Validation_Dataset/RoadAnomaly21/images/*.*
+METHOD  maxentropy
+TEMP    0.5
+    AUPRC score:76.53765641434755   FPR@TPR95:33.419677056062156
+DATASET  dataset/anomaly/Validation_Dataset/RoadAnomaly21/images/*.*
+METHOD  maxentropy
+TEMP    0.75
+    AUPRC score:76.67181469011604   FPR@TPR95:33.36928727466798
+DATASET  dataset/anomaly/Validation_Dataset/RoadAnomaly21/images/*.*
+METHOD  maxentropy
+TEMP    1.0
+    AUPRC score:76.83480544354532   FPR@TPR95:33.33409651678612
+DATASET  dataset/anomaly/Validation_Dataset/RoadAnomaly21/images/*.*
+METHOD  maxentropy
+TEMP    1.1
+    AUPRC score:76.8975313111997   FPR@TPR95:33.321696044859166
+DATASET  dataset/anomaly/Validation_Dataset/RoadAnomaly21/images/*.*
+METHOD  maxentropy
+TEMP    1.2
+    AUPRC score:76.92907964190626   FPR@TPR95:33.31120337548206
+DATASET  dataset/anomaly/Validation_Dataset/RoadAnomaly21/images/*.*
+METHOD  maxentropy
+TEMP    2.0
+    AUPRC score:77.08033152781884   FPR@TPR95:33.26083056785433
+DATASET  dataset/anomaly/Validation_Dataset/RoadObsticle21/images/*.*
+METHOD  maxentropy
+TEMP    0.5
+    AUPRC score:90.16846139330903   FPR@TPR95:0.5898788135477436
+DATASET  dataset/anomaly/Validation_Dataset/RoadObsticle21/images/*.*
+METHOD  maxentropy
+TEMP    0.75
+    AUPRC score:90.12843597897816   FPR@TPR95:0.6334332352530814
+DATASET  dataset/anomaly/Validation_Dataset/RoadObsticle21/images/*.*
+METHOD  maxentropy
+TEMP    1.0
+    AUPRC score:90.1083883989893   FPR@TPR95:0.6681380774531759
+DATASET  dataset/anomaly/Validation_Dataset/RoadObsticle21/images/*.*
+METHOD  maxentropy
+TEMP    1.1
+    AUPRC score:90.09500638504207   FPR@TPR95:0.6783746086001766
+DATASET  dataset/anomaly/Validation_Dataset/RoadObsticle21/images/*.*
+METHOD  maxentropy
+TEMP    1.2
+    AUPRC score:90.08065781616561   FPR@TPR95:0.6828045735454914
+DATASET  dataset/anomaly/Validation_Dataset/RoadObsticle21/images/*.*
+METHOD  maxentropy
+TEMP    2.0
+    AUPRC score:90.05407384282817   FPR@TPR95:0.7101088901944175
+DATASET  dataset/anomaly/Validation_Dataset/fs_static/images/*.*
+METHOD  maxentropy
+TEMP    0.5
+    AUPRC score:53.419387219382564   FPR@TPR95:35.15107889826011
+DATASET  dataset/anomaly/Validation_Dataset/fs_static/images/*.*
+METHOD  maxentropy
+TEMP    0.75
+    AUPRC score:53.080457170956144   FPR@TPR95:35.116842393168945
+DATASET  dataset/anomaly/Validation_Dataset/fs_static/images/*.*
+METHOD  maxentropy
+TEMP    1.0
+    AUPRC score:52.80247542495937   FPR@TPR95:35.09077102506993
+DATASET  dataset/anomaly/Validation_Dataset/fs_static/images/*.*
+METHOD  maxentropy
+TEMP    1.1
+    AUPRC score:52.70622226071461   FPR@TPR95:35.08193869490226
+DATASET  dataset/anomaly/Validation_Dataset/fs_static/images/*.*
+METHOD  maxentropy
+TEMP    1.2
+    AUPRC score:52.626717833807305   FPR@TPR95:35.07509640553694
+DATASET  dataset/anomaly/Validation_Dataset/fs_static/images/*.*
+METHOD  maxentropy
+TEMP    2.0
+    AUPRC score:51.928534984082   FPR@TPR95:35.02127387658128
+DATASET  dataset/anomaly/Validation_Dataset/FS_LostFound_full/images/*.*
+METHOD  maxentropy
+TEMP    0.5
+    AUPRC score:28.0989873139958   FPR@TPR95:14.816277361302335
+DATASET  dataset/anomaly/Validation_Dataset/FS_LostFound_full/images/*.*
+METHOD  maxentropy
+TEMP    0.75
+    AUPRC score:28.071595443215138   FPR@TPR95:14.7422800605833
+DATASET  dataset/anomaly/Validation_Dataset/FS_LostFound_full/images/*.*
+METHOD  maxentropy
+TEMP    1.0
+    AUPRC score:27.909977259776582   FPR@TPR95:14.702823248870999
+DATASET  dataset/anomaly/Validation_Dataset/FS_LostFound_full/images/*.*
+METHOD  maxentropy
+TEMP    1.1
+    AUPRC score:27.858936983786638   FPR@TPR95:14.689983703496374
+DATASET  dataset/anomaly/Validation_Dataset/FS_LostFound_full/images/*.*
+METHOD  maxentropy
+TEMP    1.2
+    AUPRC score:27.814317817717477   FPR@TPR95:14.680344262525754
+DATASET  dataset/anomaly/Validation_Dataset/FS_LostFound_full/images/*.*
+METHOD  maxentropy
+TEMP    2.0
+    AUPRC score:27.360483386631767   FPR@TPR95:14.630340738652514
+DATASET  /content/drive/MyDrive/MaskArchitectureAnomaly_CourseProject /dataset/anomaly/Validation_Dataset/RoadAnomaly/images/*.*
+METHOD  msp
+TEMP    0.5
+    AUPRC score:75.51036819609966   FPR@TPR95:19.379140376789955
+DATASET  /content/drive/MyDrive/MaskArchitectureAnomaly_CourseProject /dataset/anomaly/Validation_Dataset/RoadAnomaly/images/*.*
+METHOD  msp
+TEMP    0.75
+    AUPRC score:75.6113629049328   FPR@TPR95:19.339205852339624
+DATASET  /content/drive/MyDrive/MaskArchitectureAnomaly_CourseProject /dataset/anomaly/Validation_Dataset/RoadAnomaly/images/*.*
+METHOD  msp
+TEMP    1.0
+    AUPRC score:75.68553735663485   FPR@TPR95:19.319838679217323
+DATASET  /content/drive/MyDrive/MaskArchitectureAnomaly_CourseProject /dataset/anomaly/Validation_Dataset/RoadAnomaly/images/*.*
+METHOD  msp
+TEMP    1.1
+    AUPRC score:75.70970014800754   FPR@TPR95:19.314394196246973
+DATASET  /content/drive/MyDrive/MaskArchitectureAnomaly_CourseProject /dataset/anomaly/Validation_Dataset/RoadAnomaly/images/*.*
+METHOD  msp
+TEMP    1.2
+    AUPRC score:75.73304730734081   FPR@TPR95:19.31017797782099
+DATASET  /content/drive/MyDrive/MaskArchitectureAnomaly_CourseProject /dataset/anomaly/Validation_Dataset/RoadAnomaly/images/*.*
+METHOD  msp
+TEMP    2.0
+    AUPRC score:75.87065801532592   FPR@TPR95:19.29221145970509
+DATASET  /content/drive/MyDrive/MaskArchitectureAnomaly_CourseProject /dataset/anomaly/Validation_Dataset/RoadAnomaly21/images/*.*
+METHOD  msp
+TEMP    0.5
+    AUPRC score:74.16076534593901   FPR@TPR95:33.46259022844122
+DATASET  /content/drive/MyDrive/MaskArchitectureAnomaly_CourseProject /dataset/anomaly/Validation_Dataset/RoadAnomaly21/images/*.*
+METHOD  msp
+TEMP    0.75
+    AUPRC score:74.24256946677463   FPR@TPR95:33.46180171069607
+DATASET  /content/drive/MyDrive/MaskArchitectureAnomaly_CourseProject /dataset/anomaly/Validation_Dataset/RoadAnomaly21/images/*.*
+METHOD  msp
+TEMP    1.0
+    AUPRC score:74.30637962394329   FPR@TPR95:33.46139972910535
+DATASET  /content/drive/MyDrive/MaskArchitectureAnomaly_CourseProject /dataset/anomaly/Validation_Dataset/RoadAnomaly21/images/*.*
+METHOD  msp
+TEMP    1.1
+    AUPRC score:74.32703519674241   FPR@TPR95:33.46127945656953
+DATASET  /content/drive/MyDrive/MaskArchitectureAnomaly_CourseProject /dataset/anomaly/Validation_Dataset/RoadAnomaly21/images/*.*
+METHOD  msp
+TEMP    1.2
+    AUPRC score:74.34643002206974   FPR@TPR95:33.46119369624318
+DATASET  /content/drive/MyDrive/MaskArchitectureAnomaly_CourseProject /dataset/anomaly/Validation_Dataset/RoadAnomaly21/images/*.*
+METHOD  msp
+TEMP    2.0
+    AUPRC score:74.45298251263925   FPR@TPR95:33.46100379863876
+DATASET  /content/drive/MyDrive/MaskArchitectureAnomaly_CourseProject /dataset/anomaly/Validation_Dataset/RoadObsticle21/images/*.*
+METHOD  msp
+TEMP    0.5
+    AUPRC score:90.19099765468584   FPR@TPR95:0.5441818620674522
+DATASET  /content/drive/MyDrive/MaskArchitectureAnomaly_CourseProject /dataset/anomaly/Validation_Dataset/RoadObsticle21/images/*.*
+METHOD  msp
+TEMP    0.75
+    AUPRC score:90.19426414300679   FPR@TPR95:0.5443267674628597
+DATASET  /content/drive/MyDrive/MaskArchitectureAnomaly_CourseProject /dataset/anomaly/Validation_Dataset/RoadObsticle21/images/*.*
+METHOD  msp
+TEMP    1.0
+    AUPRC score:90.19543136590363   FPR@TPR95:0.5463761437693371
+DATASET  /content/drive/MyDrive/MaskArchitectureAnomaly_CourseProject /dataset/anomaly/Validation_Dataset/RoadObsticle21/images/*.*
+METHOD  msp
+TEMP    1.1
+    AUPRC score:90.19573261034786   FPR@TPR95:0.5463554429985645
+DATASET  /content/drive/MyDrive/MaskArchitectureAnomaly_CourseProject /dataset/anomaly/Validation_Dataset/RoadObsticle21/images/*.*
+METHOD  msp
+TEMP    1.2
+    AUPRC score:90.19602012508325   FPR@TPR95:0.5463657933839509
+DATASET  /content/drive/MyDrive/MaskArchitectureAnomaly_CourseProject /dataset/anomaly/Validation_Dataset/RoadObsticle21/images/*.*
+METHOD  msp
+TEMP    2.0
+    AUPRC score:90.19724454429974   FPR@TPR95:0.5463657933839509
+DATASET  /content/drive/MyDrive/MaskArchitectureAnomaly_CourseProject /dataset/anomaly/Validation_Dataset/fs_static/images/*.*
+METHOD  msp
+TEMP    0.5
+    AUPRC score:54.3719537311167   FPR@TPR95:35.18088703614909
+DATASET  /content/drive/MyDrive/MaskArchitectureAnomaly_CourseProject /dataset/anomaly/Validation_Dataset/fs_static/images/*.*
+METHOD  msp
+TEMP    0.75
+    AUPRC score:54.38737798574568   FPR@TPR95:35.179915232252625
+DATASET  /content/drive/MyDrive/MaskArchitectureAnomaly_CourseProject /dataset/anomaly/Validation_Dataset/fs_static/images/*.*
+METHOD  msp
+TEMP    1.0
+    AUPRC score:54.39406512994134   FPR@TPR95:35.179297310290934
+DATASET  /content/drive/MyDrive/MaskArchitectureAnomaly_CourseProject /dataset/anomaly/Validation_Dataset/fs_static/images/*.*
+METHOD  msp
+TEMP    1.1
+    AUPRC score:54.3957605348842   FPR@TPR95:35.17841296096033
+DATASET  /content/drive/MyDrive/MaskArchitectureAnomaly_CourseProject /dataset/anomaly/Validation_Dataset/fs_static/images/*.*
+METHOD  msp
+TEMP    1.2
+    AUPRC score:54.39712400207287   FPR@TPR95:35.179001499053406
+DATASET  /content/drive/MyDrive/MaskArchitectureAnomaly_CourseProject /dataset/anomaly/Validation_Dataset/fs_static/images/*.*
+METHOD  msp
+TEMP    2.0
+    AUPRC score:54.4026028771992   FPR@TPR95:35.17853662942863
+DATASET  /content/drive/MyDrive/MaskArchitectureAnomaly_CourseProject /dataset/anomaly/Validation_Dataset/FS_LostFound_full/images/*.*
+METHOD  msp
+TEMP    0.5
+    AUPRC score:25.35481564063819   FPR@TPR95:14.89372823592649
+DATASET  /content/drive/MyDrive/MaskArchitectureAnomaly_CourseProject /dataset/anomaly/Validation_Dataset/FS_LostFound_full/images/*.*
+METHOD  msp
+TEMP    0.75
+    AUPRC score:25.364111122469126   FPR@TPR95:14.88868057695097
+DATASET  /content/drive/MyDrive/MaskArchitectureAnomaly_CourseProject /dataset/anomaly/Validation_Dataset/FS_LostFound_full/images/*.*
+METHOD  msp
+TEMP    1.0
+    AUPRC score:25.370924005915242   FPR@TPR95:14.886127000866805
+DATASET  /content/drive/MyDrive/MaskArchitectureAnomaly_CourseProject /dataset/anomaly/Validation_Dataset/FS_LostFound_full/images/*.*
+METHOD  msp
+TEMP    1.1
+    AUPRC score:25.373506351893106   FPR@TPR95:14.885527853353198
+DATASET  /content/drive/MyDrive/MaskArchitectureAnomaly_CourseProject /dataset/anomaly/Validation_Dataset/FS_LostFound_full/images/*.*
+METHOD  msp
+TEMP    1.2
+    AUPRC score:25.375935715739107   FPR@TPR95:14.884859297114645
+DATASET  /content/drive/MyDrive/MaskArchitectureAnomaly_CourseProject /dataset/anomaly/Validation_Dataset/FS_LostFound_full/images/*.*
+METHOD  msp
+TEMP    2.0
+    AUPRC score:25.393270093275515   FPR@TPR95:14.881555287433756

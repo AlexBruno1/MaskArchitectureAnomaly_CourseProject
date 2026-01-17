@@ -1,0 +1,82 @@
+==========================================================
+MAXENTROPY EVALUATION RESULTS - ALL DATASETS
+==========================================================
+
+DATASET: RoadAnomaly (60 images)
+---------------------------------------------------------
+temp=0.5  | AUPRC: 77.74% | FPR@95TPR: 19.04%
+temp=0.75 | AUPRC: 77.75% | FPR@95TPR: 18.90%
+temp=1.0  | AUPRC: 77.67% | FPR@95TPR: 18.81%
+temp=1.1  | AUPRC: 77.64% | FPR@95TPR: 18.78%
+temp=1.2  | AUPRC: 77.61% | FPR@95TPR: 18.76%
+temp=2.0  | AUPRC: 77.26% | FPR@95TPR: 18.65%
+Best: temp=0.75 (AUPRC: 77.75%)
+
+DATASET: RoadAnomaly21 (10 images)
+---------------------------------------------------------
+temp=0.5  | AUPRC: 76.54% | FPR@95TPR: 33.42%
+temp=0.75 | AUPRC: 76.67% | FPR@95TPR: 33.37%
+temp=1.0  | AUPRC: 76.83% | FPR@95TPR: 33.33%
+temp=1.1  | AUPRC: 76.90% | FPR@95TPR: 33.32%
+temp=1.2  | AUPRC: 76.93% | FPR@95TPR: 33.31%
+temp=2.0  | AUPRC: 77.08% | FPR@95TPR: 33.26%
+Best: temp=2.0 (AUPRC: 77.08%) ⚠️ Counter-intuitive!
+
+DATASET: RoadObsticle21 (30 images)
+---------------------------------------------------------
+temp=0.5  | AUPRC: 90.17% | FPR@95TPR: 0.59%
+temp=0.75 | AUPRC: 90.13% | FPR@95TPR: 0.63%
+temp=1.0  | AUPRC: 90.11% | FPR@95TPR: 0.67%
+temp=1.1  | AUPRC: 90.10% | FPR@95TPR: 0.68%
+temp=1.2  | AUPRC: 90.08% | FPR@95TPR: 0.68%
+temp=2.0  | AUPRC: 90.05% | FPR@95TPR: 0.71%
+Best: temp=0.5 (AUPRC: 90.17%) ⭐ EXCELLENT RESULTS
+
+DATASET: fs_static (30 images)
+---------------------------------------------------------
+temp=0.5  | AUPRC: 53.42% | FPR@95TPR: 35.15%
+temp=0.75 | AUPRC: 53.08% | FPR@95TPR: 35.12%
+temp=1.0  | AUPRC: 52.80% | FPR@95TPR: 35.09%
+temp=1.1  | AUPRC: 52.71% | FPR@95TPR: 35.08%
+temp=1.2  | AUPRC: 52.63% | FPR@95TPR: 35.08%
+temp=2.0  | AUPRC: 51.93% | FPR@95TPR: 35.02%
+Best: temp=0.5 (AUPRC: 53.42%) ⚠️ CHALLENGING DATASET
+
+DATASET: FS_LostFound_full (100 images)
+---------------------------------------------------------
+temp=0.5  | AUPRC: 28.10% | FPR@95TPR: 14.82%
+temp=0.75 | AUPRC: 28.07% | FPR@95TPR: 14.74%
+temp=1.0  | AUPRC: 27.91% | FPR@95TPR: 14.70%
+temp=1.1  | AUPRC: 27.86% | FPR@95TPR: 14.69%
+temp=1.2  | AUPRC: 27.81% | FPR@95TPR: 14.68%
+temp=2.0  | AUPRC: 27.36% | FPR@95TPR: 14.63%
+Best: temp=0.5 (AUPRC: 28.10%) ❌ VERY CHALLENGING DATASET
+
+==========================================================
+SUMMARY BY DATASET (Best AUPRC)
+==========================================================
+1. RoadObsticle21:    90.17% (temp=0.5)  ⭐ EXCELLENT
+2. RoadAnomaly:       77.75% (temp=0.75)  ✓ Good
+3. RoadAnomaly21:     77.08% (temp=2.0)   ✓ Good
+4. fs_static:         53.42% (temp=0.5)   ⚠️ Moderate
+5. FS_LostFound_full: 28.10% (temp=0.5)   ❌ Poor
+
+==========================================================
+KEY INSIGHTS
+==========================================================
+✓ Temperature effect: Lower temperatures (0.5-0.75) generally better
+✓ RoadObsticle21 is the EASIEST dataset (90%+ AUPRC)
+✓ fs_static and FS_LostFound_full are DIFFICULT for this model
+✓ Domain gap: Lost&Found objects very different from training data
+✓ Temperature sensitivity varies by dataset:
+  - RoadAnomaly/RoadObsticle21: prefer low temp (sharper predictions)
+  - RoadAnomaly21: anomaly - higher temp works better (small dataset?)
+  
+==========================================================
+RECOMMENDED TEMPERATURES FOR PRODUCTION
+==========================================================
+RoadAnomaly:       temp=0.75
+RoadAnomaly21:     temp=1.0-2.0 (small dataset, high variance)
+RoadObsticle21:    temp=0.5
+fs_static:         temp=0.5
+FS_LostFound_full: temp=0.5 (but results still poor)
