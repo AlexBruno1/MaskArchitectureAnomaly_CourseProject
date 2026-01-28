@@ -35,6 +35,11 @@ from torchvision.transforms.v2.functional import pad
 import logging
 
 from training.two_stage_warmup_poly_schedule import TwoStageWarmupPolySchedule
+from models.lora import (
+    DEFAULT_LORA_TARGET_MODULES,
+    apply_lora,
+    mark_only_lora_as_trainable,
+)
 
 bold_green = "\033[1;32m"
 reset = "\033[0m"
@@ -59,6 +64,13 @@ class LightningModule(lightning.LightningModule):
         ckpt_path=None,
         delta_weights=False,
         load_ckpt_class_head=True,
+        lora_enabled: bool = False,
+        lora_r: int = 8,
+        lora_alpha: float = 16.0,
+        lora_dropout: float = 0.05,
+        lora_target_modules: Optional[list[str]] = None,
+        lora_train_bias: str = "none",
+        lora_trainable_modules: Optional[list[str]] = None,
     ):
         super().__init__()
 
@@ -75,8 +87,31 @@ class LightningModule(lightning.LightningModule):
         self.poly_power = poly_power
         self.warmup_steps = warmup_steps
         self.llrd_l2_enabled = llrd_l2_enabled
+        self.lora_enabled = lora_enabled
+        self.lora_r = lora_r
+        self.lora_alpha = lora_alpha
+        self.lora_dropout = lora_dropout
+        self.lora_target_modules = lora_target_modules
+        self.lora_train_bias = lora_train_bias
+        self.lora_trainable_modules = lora_trainable_modules
 
         self.strict_loading = False
+
+        if self.lora_enabled:
+            target_modules = self.lora_target_modules or list(
+                DEFAULT_LORA_TARGET_MODULES
+            )
+            replaced = apply_lora(
+                self.network.encoder.backbone,
+                target_modules=target_modules,
+                r=self.lora_r,
+                alpha=self.lora_alpha,
+                dropout=self.lora_dropout,
+            )
+            if replaced == 0:
+                logging.warning(
+                    "LoRA enabled but no target modules matched in the backbone."
+                )
 
         if delta_weights and ckpt_path:
             logging.info("Delta weights mode")
@@ -97,6 +132,20 @@ class LightningModule(lightning.LightningModule):
             incompatible_keys = self.load_state_dict(ckpt, strict=False)
             self._raise_on_incompatible(incompatible_keys, load_ckpt_class_head)
 
+        if self.lora_enabled:
+            trainable_modules = self.lora_trainable_modules or []
+            trainable_count = mark_only_lora_as_trainable(
+                self.network,
+                train_bias=self.lora_train_bias,
+                trainable_modules=trainable_modules,
+            )
+            total_count = sum(p.numel() for p in self.network.parameters())
+            logging.info(
+                "LoRA enabled: %s / %s parameters trainable",
+                f"{trainable_count:,}",
+                f"{total_count:,}",
+            )
+
         self.log = torch.compiler.disable(self.log)  # type: ignore
 
     def configure_optimizers(self):
@@ -113,6 +162,8 @@ class LightningModule(lightning.LightningModule):
         ).tolist()
 
         for name, param in reversed(list(self.named_parameters())):
+            if not param.requires_grad:
+                continue
             lr = self.lr
 
             if name.replace("network.encoder.backbone.", "") in encoder_param_names:
@@ -595,7 +646,11 @@ class LightningModule(lightning.LightningModule):
 
         block_postfix = self.block_postfix(block_idx)
         name = f"{log_prefix}_pred_{batch_idx}{block_postfix}"
-        self.trainer.logger.experiment.log({name: [wandb.Image(Image.open(buf))]})
+        logger = getattr(self.trainer, "logger", None)
+        experiment = getattr(logger, "experiment", None) if logger else None
+        if experiment is None or not hasattr(experiment, "log"):
+            return
+        experiment.log({name: [wandb.Image(Image.open(buf))]})
 
     @torch.compiler.disable
     def scale_img_size_semantic(self, size: tuple[int, int]):
@@ -866,6 +921,9 @@ class LightningModule(lightning.LightningModule):
         summed = {}
         for k in state_dict1.keys():
             if k not in state_dict2:
+                if self.lora_enabled and ("lora_A" in k or "lora_B" in k):
+                    summed[k] = state_dict1[k]
+                    continue
                 raise KeyError(f"Key {k} not found in second state_dict")
 
             if state_dict1[k].shape != state_dict2[k].shape:
@@ -894,14 +952,19 @@ class LightningModule(lightning.LightningModule):
 
     def _raise_on_incompatible(self, incompatible_keys, load_ckpt_class_head):
         if incompatible_keys.missing_keys:
+            missing_keys = incompatible_keys.missing_keys
+            if self.lora_enabled:
+                missing_keys = [
+                    key
+                    for key in missing_keys
+                    if "lora_A" not in key and "lora_B" not in key
+                ]
             if not load_ckpt_class_head:
                 missing_keys = [
                     key
-                    for key in incompatible_keys.missing_keys
+                    for key in missing_keys
                     if "class_head" not in key and "class_predictor" not in key
                 ]
-            else:
-                missing_keys = incompatible_keys.missing_keys
             if missing_keys:
                 raise ValueError(f"Missing keys: {missing_keys}")
         if incompatible_keys.unexpected_keys:

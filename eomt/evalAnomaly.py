@@ -64,7 +64,17 @@ def fpr_at_95_tpr(preds, labels, pos_label=1):
         # Linear interp between values to get FPR at TPR == 0.95
         return np.interp(0.95, tpr, fpr)
 
-def build_model(ckpt_path, device):
+def build_model(
+    ckpt_path,
+    device,
+    lora_enabled=False,
+    lora_r=8,
+    lora_alpha=16.0,
+    lora_dropout=0.05,
+    lora_target_modules=None,
+    lora_train_bias="none",
+    lora_trainable_modules=None,
+):
     encoder = ViT(
         img_size=MODEL_IMG_SIZE,
         patch_size=PATCH_SIZE,
@@ -95,6 +105,13 @@ def build_model(ckpt_path, device):
         ckpt_path=ckpt_path,
         delta_weights=False,
         load_ckpt_class_head=True,
+        lora_enabled=lora_enabled,
+        lora_r=lora_r,
+        lora_alpha=lora_alpha,
+        lora_dropout=lora_dropout,
+        lora_target_modules=lora_target_modules,
+        lora_train_bias=lora_train_bias,
+        lora_trainable_modules=lora_trainable_modules,
     )
 
     model = lightningModule.network
@@ -144,6 +161,17 @@ def main():
         default="msp",
         choices=["msp", "maxlogit", "maxentropy", "rba"],
     )
+    parser.add_argument("--lora", action="store_true")
+    parser.add_argument("--lora-r", type=int, default=8)
+    parser.add_argument("--lora-alpha", type=float, default=16.0)
+    parser.add_argument("--lora-dropout", type=float, default=0.05)
+    parser.add_argument("--lora-target-modules", nargs="+", default=None)
+    parser.add_argument(
+        "--lora-train-bias",
+        choices=["none", "lora_only", "all"],
+        default="none",
+    )
+    parser.add_argument("--lora-trainable-modules", nargs="+", default=None)
 
     args = parser.parse_args()
 
@@ -157,7 +185,17 @@ def main():
 
     input_transform, target_transform = build_transforms(MODEL_IMG_SIZE[0], MODEL_IMG_SIZE[1])
 
-    model = build_model(args.ckpt, device)
+    model = build_model(
+        args.ckpt,
+        device,
+        lora_enabled=args.lora,
+        lora_r=args.lora_r,
+        lora_alpha=args.lora_alpha,
+        lora_dropout=args.lora_dropout,
+        lora_target_modules=args.lora_target_modules,
+        lora_train_bias=args.lora_train_bias,
+        lora_trainable_modules=args.lora_trainable_modules,
+    )
     print("[OK] EoMT loaded correctly")
 
     anomaly_score_list = []
