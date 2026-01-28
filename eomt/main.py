@@ -140,12 +140,20 @@ class LightningCLI(cli.LightningCLI):
         )
 
     def fit(self, model, **kwargs):
-        if hasattr(self.trainer.logger.experiment, "log_code"):
+        logger = getattr(self.trainer, "logger", None)
+        experiment = getattr(logger, "experiment", None) if logger else None
+        if experiment is not None and hasattr(experiment, "log_code"):
             is_gitignored = parse_gitignore(".gitignore")
             include_fn = lambda path: path.endswith(".py") or path.endswith(".yaml")
-            self.trainer.logger.experiment.log_code(
+            experiment.log_code(
                 ".", include_fn=include_fn, exclude_fn=is_gitignored
             )
+        if logger is None:
+            self.trainer.callbacks = [
+                cb
+                for cb in self.trainer.callbacks
+                if not isinstance(cb, LearningRateMonitor)
+            ]
 
         self.trainer.fit_loop.epoch_loop._should_check_val_fx = MethodType(
             _should_check_val_fx, self.trainer.fit_loop.epoch_loop

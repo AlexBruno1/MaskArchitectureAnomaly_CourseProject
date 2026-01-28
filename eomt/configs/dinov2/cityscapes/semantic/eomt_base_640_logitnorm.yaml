@@ -1,0 +1,40 @@
+callbacks:
+  - class_path: lightning.pytorch.callbacks.ModelCheckpoint
+    init_args:
+      dirpath: "outputs/checkpoints"
+      save_last: true
+      save_top_k: -1  # salva tutti i checkpoint
+      filename: "lora_logitnorm_checkpoint_epoch{epoch}"
+
+trainer:
+  max_epochs: 107
+  logger:
+    class_path: lightning.pytorch.loggers.wandb.WandbLogger
+    init_args:
+      resume: allow
+      project: "eomt"
+      name: "cityscapes_semantic_eomt_base_640_logitnorm"
+model:
+  class_path: training.mask_classification_semantic_logitnorm.MaskClassificationSemanticLogitNorm
+  init_args:
+    attn_mask_annealing_enabled: True
+    attn_mask_annealing_start_steps: [3317, 8292, 13268]
+    attn_mask_annealing_end_steps: [6634, 11609, 16585]
+    network:
+      class_path: models.eomt.EoMT
+      init_args:
+        num_q: 100
+        num_blocks: 3
+        encoder:
+          class_path: models.vit.ViT
+          init_args:
+            backbone_name: vit_base_patch14_reg4_dinov2
+    temperature: 0.01
+    ckpt_path: /content/drive/MyDrive/MaskArchitectureAnomaly_CourseProject/checkpoints/eomt_cityscapes.bin
+
+# Data config remains unchanged
+# (inherits from the original or can be overridden in the run command)
+data:
+  class_path: datasets.cityscapes_semantic.CityscapesSemantic
+  init_args:
+    path: /content/drive/MyDrive/MaskArchitectureAnomaly_CourseProject/dataset/cityscapes

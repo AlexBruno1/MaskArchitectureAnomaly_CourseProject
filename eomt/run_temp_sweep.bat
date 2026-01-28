@@ -52,9 +52,9 @@ set method4=rba
 @REM   python evalAnomaly.py --ckpt %ckpt% --input %input3% --method %method2% --temp %%t
 @REM )
 
-@REM for %%t in (0.5 0.75 1.0 1.1 2.0) do (
-@REM   python evalAnomaly.py --ckpt %ckpt% --input %input3% --method %method3% --temp %%t
-@REM )
+for %%t in (0.5 0.75 1.0 1.1 2.0) do (
+  python evalAnomaly.py --ckpt %ckpt% --input %input3% --method %method3% --temp %%t
+)
 
 @REM for %%t in (0.5 0.75 1.0 1.1 2.0) do (
 @REM   python evalAnomaly.py --ckpt %ckpt% --input %input3% --method %method4% --temp %%t
@@ -70,9 +70,9 @@ set method4=rba
 @REM   python evalAnomaly.py --ckpt %ckpt% --input %input4% --method %method2% --temp %%t
 @REM )
 
-@REM for %%t in (0.5 0.75 1.0 1.1 2.0) do (
-@REM   python evalAnomaly.py --ckpt %ckpt% --input %input4% --method %method3% --temp %%t
-@REM )
+for %%t in (0.5 0.75 1.0 1.1 2.0) do (
+  python evalAnomaly.py --ckpt %ckpt% --input %input4% --method %method3% --temp %%t
+)
 
 @REM for %%t in (0.5 0.75 1.0 1.1 2.0) do (
 @REM   python evalAnomaly.py --ckpt %ckpt% --input %input4% --method %method4% --temp %%t
@@ -91,6 +91,11 @@ for %%t in (0.5 0.75 1.0 1.1 2.0) do (
   python evalAnomaly.py --ckpt %ckpt% --input %input5% --method %method3% --temp %%t
 )
 
-for %%t in (0.5 0.75 1.0 1.1 2.0) do (
-  python evalAnomaly.py --ckpt %ckpt% --input %input5% --method %method4% --temp %%t
-)
+@REM for %%t in (0.5 0.75 1.0 1.1 2.0) do (
+@REM   python evalAnomaly.py --ckpt %ckpt% --input %input5% --method %method4% --temp %%t
+@REM )
+
+
+
+
+python main.py fit -c configs/dinov2/cityscapes/semantic/eomt_base_640_lora.yaml -data.path ../dataset/cityscapes -model.ckpt_path checkpoints/eomt_cityscapes.bin

@@ -1,0 +1,36 @@
+# OOD Evaluation Results (last epoch)
+
+## RoadObsticle21 (.webp, 30 images)
+| Method     | AUPRC | FPR@95TPR |
+|------------|-------|-----------|
+| MSP        | 93.24 | 0.17      |
+| MaxLogit   | 92.73 | 0.17      |
+| MaxEntropy | 92.70 | 0.17      |
+
+## RoadAnomaly21 (.png, 10 images)
+| Method     | AUPRC | FPR@95TPR |
+|------------|-------|-----------|
+| MSP        | 67.39 | 64.55     |
+| MaxLogit   | 66.50 | 98.51     |
+| MaxEntropy | 71.59 | 65.38     |
+
+## fs_static (.jpg, 30 images)
+| Method     | AUPRC | FPR@95TPR |
+|------------|-------|-----------|
+| MSP        | 48.56 | 38.08     |
+| MaxLogit   | 48.78 | 39.46     |
+| MaxEntropy | 45.86 | 38.00     |
+
+## FS_LostFound_full (.png, 100 images)
+| Method     | AUPRC | FPR@95TPR |
+|------------|-------|-----------|
+| MSP        | 20.23 | 17.75     |
+| MaxLogit   | 20.38 | 17.96     |
+| MaxEntropy | 23.51 | 18.01     |
+
+## RoadAnomaly (.jpg, 60 images)
+| Method     | AUPRC | FPR@95TPR |
+|------------|-------|-----------|
+| MSP        | 74.27 | 27.40     |
+| MaxLogit   | 74.38 | 28.52     |
+| MaxEntropy | 76.11 | 27.55     |
