@@ -1,0 +1,4 @@
+DATASET  /content/drive/MyDrive/MaskArchitectureAnomaly_CourseProject/dataset/anomaly/Validation_Dataset/RoadAnomaly21/images/*.*
+METHOD  maxlogit
+TEMP    1.0
+    AUPRC score:67.00737467299747   FPR@TPR95:99.87276061111092

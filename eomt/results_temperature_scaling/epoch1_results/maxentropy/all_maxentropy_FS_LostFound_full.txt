@@ -1,0 +1,24 @@
+DATASET  /content/drive/MyDrive/MaskArchitectureAnomaly_CourseProject/dataset/anomaly/Validation_Dataset/FS_LostFound_full/images/*.*
+METHOD  maxentropy
+TEMP    0.5
+    AUPRC score:22.46605504469291   FPR@TPR95:15.237091595114027
+DATASET  /content/drive/MyDrive/MaskArchitectureAnomaly_CourseProject/dataset/anomaly/Validation_Dataset/FS_LostFound_full/images/*.*
+METHOD  maxentropy
+TEMP    0.75
+    AUPRC score:22.964794911780217   FPR@TPR95:15.199422310410421
+DATASET  /content/drive/MyDrive/MaskArchitectureAnomaly_CourseProject/dataset/anomaly/Validation_Dataset/FS_LostFound_full/images/*.*
+METHOD  maxentropy
+TEMP    1.1
+    AUPRC score:23.33754481600686   FPR@TPR95:15.172087503917956
+DATASET  /content/drive/MyDrive/MaskArchitectureAnomaly_CourseProject/dataset/anomaly/Validation_Dataset/FS_LostFound_full/images/*.*
+METHOD  maxentropy
+TEMP    1.2
+    AUPRC score:23.4619832729249   FPR@TPR95:15.170610505250966
+DATASET  /content/drive/MyDrive/MaskArchitectureAnomaly_CourseProject/dataset/anomaly/Validation_Dataset/FS_LostFound_full/images/*.*
+METHOD  maxentropy
+TEMP    1.0
+    AUPRC score:23.27754380621831   FPR@TPR95:15.173023126405278
+DATASET  /content/drive/MyDrive/MaskArchitectureAnomaly_CourseProject/dataset/anomaly/Validation_Dataset/FS_LostFound_full/images/*.*
+METHOD  maxentropy
+TEMP    2.0
+    AUPRC score:23.859184288383716   FPR@TPR95:15.131723925698076

@@ -1,0 +1,4 @@
+DATASET  /content/drive/MyDrive/MaskArchitectureAnomaly_CourseProject/dataset/anomaly/Validation_Dataset/RoadObsticle21/images/*.*
+METHOD  maxentropy
+TEMP    1.0
+    AUPRC score:79.20663070468308   FPR@TPR95:99.99891320953445
