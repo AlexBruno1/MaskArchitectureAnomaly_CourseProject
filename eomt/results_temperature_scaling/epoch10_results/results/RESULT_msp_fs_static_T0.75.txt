@@ -1,0 +1,4 @@
+DATASET  /content/drive/MyDrive/MaskArchitectureAnomaly_CourseProject/dataset/anomaly/Validation_Dataset/fs_static/images/*.*
+METHOD  msp
+TEMP    0.75
+    AUPRC score:48.55366049001035   FPR@TPR95:38.08281451962645

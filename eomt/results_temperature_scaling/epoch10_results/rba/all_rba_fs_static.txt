@@ -1,0 +1,24 @@
+DATASET  /content/drive/MyDrive/MaskArchitectureAnomaly_CourseProject/dataset/anomaly/Validation_Dataset/fs_static/images/*.*
+METHOD  rba
+TEMP    0.5
+    AUPRC score:46.84029551029278   FPR@TPR95:34.10740985539789
+DATASET  /content/drive/MyDrive/MaskArchitectureAnomaly_CourseProject/dataset/anomaly/Validation_Dataset/fs_static/images/*.*
+METHOD  rba
+TEMP    0.75
+    AUPRC score:48.364343458907925   FPR@TPR95:35.75796373493787
+DATASET  /content/drive/MyDrive/MaskArchitectureAnomaly_CourseProject/dataset/anomaly/Validation_Dataset/fs_static/images/*.*
+METHOD  rba
+TEMP    1.1
+    AUPRC score:48.50462176293367   FPR@TPR95:41.69294167676954
+DATASET  /content/drive/MyDrive/MaskArchitectureAnomaly_CourseProject/dataset/anomaly/Validation_Dataset/fs_static/images/*.*
+METHOD  rba
+TEMP    1.2
+    AUPRC score:48.365333601709295   FPR@TPR95:42.02558837040423
+DATASET  /content/drive/MyDrive/MaskArchitectureAnomaly_CourseProject/dataset/anomaly/Validation_Dataset/fs_static/images/*.*
+METHOD  rba
+TEMP    1.0
+    AUPRC score:48.58715306476827   FPR@TPR95:40.44529296992047
+DATASET  /content/drive/MyDrive/MaskArchitectureAnomaly_CourseProject/dataset/anomaly/Validation_Dataset/fs_static/images/*.*
+METHOD  rba
+TEMP    2.0
+    AUPRC score:46.56013764059215   FPR@TPR95:61.997812289599906

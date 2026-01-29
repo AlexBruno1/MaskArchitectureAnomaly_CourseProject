@@ -1,0 +1,4 @@
+DATASET  /content/drive/MyDrive/MaskArchitectureAnomaly_CourseProject/dataset/anomaly/Validation_Dataset/FS_LostFound_full/images/*.*
+METHOD  msp
+TEMP    1.1
+    AUPRC score:20.22778410882259   FPR@TPR95:17.79400571051526
