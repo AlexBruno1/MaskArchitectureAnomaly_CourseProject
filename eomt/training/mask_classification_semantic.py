@@ -48,6 +48,7 @@ class MaskClassificationSemantic(LightningModule):
         lora_target_modules: Optional[list[str]] = None,
         lora_train_bias: str = "none",
         lora_trainable_modules: Optional[list[str]] = None,
+        temperature: float = 0.01,
     ):
         super().__init__(
             network=network,
@@ -74,6 +75,8 @@ class MaskClassificationSemantic(LightningModule):
             lora_train_bias=lora_train_bias,
             lora_trainable_modules=lora_trainable_modules,
         )
+        
+        self.temperature = temperature
 
         self.save_hyperparameters(ignore=["_class_path"])
 
@@ -82,6 +85,7 @@ class MaskClassificationSemantic(LightningModule):
         self.overlap_thresh = overlap_thresh
         self.stuff_classes = range(num_classes)
 
+        # Instantiate the MaskClassificationLoss (logit normalization loss is used for fine-tuning)
         self.criterion = MaskClassificationLoss(
             num_points=num_points,
             oversample_ratio=oversample_ratio,
@@ -91,6 +95,7 @@ class MaskClassificationSemantic(LightningModule):
             class_coefficient=class_coefficient,
             num_labels=num_classes,
             no_object_coefficient=no_object_coefficient,
+            temperature=temperature,
         )
 
         self.init_metrics_semantic(ignore_idx, self.network.num_blocks + 1 if self.network.masked_attn_enabled else 1)
@@ -117,7 +122,6 @@ class MaskClassificationSemantic(LightningModule):
             logits = self.revert_window_logits_semantic(crop_logits, origins, img_sizes)
 
             self.update_metrics_semantic(logits, targets, i)
-
             if batch_idx == 0:
                 self.plot_semantic(
                     imgs[0], targets[0], logits[0], log_prefix, i, batch_idx

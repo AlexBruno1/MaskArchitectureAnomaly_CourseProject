@@ -52,6 +52,7 @@ class MaskClassificationInstance(LightningModule):
         lora_target_modules: Optional[list[str]] = None,
         lora_train_bias: str = "none",
         lora_trainable_modules: Optional[list[str]] = None,
+        temperature: float = 0.01,
     ):
         super().__init__(
             network=network,
@@ -77,6 +78,7 @@ class MaskClassificationInstance(LightningModule):
             lora_target_modules=lora_target_modules,
             lora_train_bias=lora_train_bias,
             lora_trainable_modules=lora_trainable_modules,
+            temperature=temperature,
         )
 
         self.save_hyperparameters(ignore=["_class_path"])
@@ -95,6 +97,7 @@ class MaskClassificationInstance(LightningModule):
             class_coefficient=class_coefficient,
             num_labels=num_classes,
             no_object_coefficient=no_object_coefficient,
+            temperature=temperature,
         )
 
         self.init_metrics_instance(self.network.num_blocks + 1 if self.network.masked_attn_enabled else 1)

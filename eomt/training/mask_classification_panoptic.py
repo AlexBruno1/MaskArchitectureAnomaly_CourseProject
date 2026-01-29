@@ -48,6 +48,7 @@ class MaskClassificationPanoptic(LightningModule):
         lora_target_modules: Optional[list[str]] = None,
         lora_train_bias: str = "none",
         lora_trainable_modules: Optional[list[str]] = None,
+        temperature: float = 0.01,
     ):
         super().__init__(
             network=network,
@@ -73,6 +74,7 @@ class MaskClassificationPanoptic(LightningModule):
             lora_target_modules=lora_target_modules,
             lora_train_bias=lora_train_bias,
             lora_trainable_modules=lora_trainable_modules,
+            temperature=temperature,
         )
 
         self.save_hyperparameters(ignore=["_class_path"])
@@ -90,6 +92,7 @@ class MaskClassificationPanoptic(LightningModule):
             class_coefficient=class_coefficient,
             num_labels=num_classes,
             no_object_coefficient=no_object_coefficient,
+            temperature=temperature,
         )
 
         thing_classes = [i for i in range(num_classes) if i not in stuff_classes]

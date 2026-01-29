@@ -1,3 +1,7 @@
+import torch
+import torch.nn as nn
+import torch.nn.functional as F
+
 # ---------------------------------------------------------------
 # © 2025 Mobile Perception Systems Lab at TU/e. All rights reserved.
 # Licensed under the MIT License.
@@ -8,7 +12,6 @@
 # Used under the Apache 2.0 License.
 # ---------------------------------------------------------------
 
-
 from typing import List, Optional
 import torch.distributed as dist
 import torch
@@ -17,7 +20,6 @@ from transformers.models.mask2former.modeling_mask2former import (
     Mask2FormerLoss,
     Mask2FormerHungarianMatcher,
 )
-
 
 class MaskClassificationLoss(Mask2FormerLoss):
     def __init__(
@@ -30,6 +32,7 @@ class MaskClassificationLoss(Mask2FormerLoss):
         class_coefficient: float,
         num_labels: int,
         no_object_coefficient: float,
+        temperature: float = 0.01,
     ):
         nn.Module.__init__(self)
         self.num_points = num_points
@@ -40,6 +43,7 @@ class MaskClassificationLoss(Mask2FormerLoss):
         self.class_coefficient = class_coefficient
         self.num_labels = num_labels
         self.eos_coef = no_object_coefficient
+        self.temperature = temperature  # Temperature parameter for logit normalization
         empty_weight = torch.ones(self.num_labels + 1)
         empty_weight[-1] = self.eos_coef
         self.register_buffer("empty_weight", empty_weight)
@@ -95,6 +99,47 @@ class MaskClassificationLoss(Mask2FormerLoss):
             loss_masks[key] = loss_masks[key] / num_masks
 
         return loss_masks
+
+    def loss_labels(self, class_queries_logits, class_labels, indices):
+        """
+        Compute the class loss using Logit Normalization.
+        The logits are normalized along the class dimension (L2 norm), then divided by the temperature.
+        This operation stabilizes the scale of the logits and can improve calibration and OOD detection.
+        The normalized logits are then used in the cross-entropy loss.
+        """
+        pred_logits = class_queries_logits
+        batch_size, num_queries, _ = pred_logits.shape
+
+        # Target construction (reusing Mask2Former logic)
+        idx = self._get_predictions_permutation_indices(indices)
+        target_classes_o = torch.cat(
+            [target[j] for target, (_, j) in zip(class_labels, indices)]
+        )
+        target_classes = torch.full(
+            (batch_size, num_queries), fill_value=self.num_labels, dtype=torch.int64, device=pred_logits.device
+        )
+        target_classes[idx] = target_classes_o
+
+        # Logit Normalization (theoretical note):
+        # Here, we normalize the logits for each query along the class dimension using the L2 norm.
+        # This projects the logits onto the unit hypersphere, removing their scale.
+        # Dividing by the temperature sharpens or smooths the softmax distribution, controlling confidence.
+        # This is especially useful for OOD detection and better uncertainty estimation.
+        norms = torch.norm(pred_logits, p=2, dim=-1, keepdim=True) + 1e-7
+        logits_norm = torch.div(pred_logits, norms) / self.temperature
+
+        # Transpose for CrossEntropy: (B, C, N)
+        pred_logits_transposed = logits_norm.transpose(1, 2)
+
+        loss_ce = torch.nn.functional.cross_entropy(
+            pred_logits_transposed, 
+            target_classes, 
+            weight=self.empty_weight,
+            ignore_index=-1
+        )
+
+        losses = {"loss_cross_entropy": loss_ce}
+        return losses
 
     def loss_total(self, losses_all_layers, log_fn) -> torch.Tensor:
         loss_total = None
